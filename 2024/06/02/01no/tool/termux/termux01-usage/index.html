@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Android Termux 安装 Git 和 SSH | flyingzc's blog</title><meta name="author" content="flyingzc"><meta name="copyright" content="flyingzc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Android 使用 Termux 安装 Git 和 SSH背景在 Android 上使用 Git 客户端。可选工具：1.Pocket Git &amp; MGit 客户端2.Termux 安装 Git(选用)下面介绍使用 Termux 安装 Git 和通过 SSH 远程连接 Termux。 1.换源运行 termux-change-repo 命令，通过图形界面替换成 TUNA&#x2F;BFSU">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Termux 安装 Git 和 SSH">
+<meta property="og:url" content="https://flyingzc.github.io/2024/06/02/01no/tool/termux/termux01-usage/index.html">
+<meta property="og:site_name" content="flyingzc&#39;s blog">
+<meta property="og:description" content="Android 使用 Termux 安装 Git 和 SSH背景在 Android 上使用 Git 客户端。可选工具：1.Pocket Git &amp; MGit 客户端2.Termux 安装 Git(选用)下面介绍使用 Termux 安装 Git 和通过 SSH 远程连接 Termux。 1.换源运行 termux-change-repo 命令，通过图形界面替换成 TUNA&#x2F;BFSU">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://flyingzc.github.io/images/zc-icon.jpeg">
+<meta property="article:published_time" content="2024-06-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-06-02T12:42:35.140Z">
+<meta property="article:author" content="flyingzc">
+<meta property="article:tag" content="Termux">
+<meta property="article:tag" content="Tool">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://flyingzc.github.io/images/zc-icon.jpeg"><link rel="shortcut icon" href="/images/zc-icon.jpeg"><link rel="canonical" href="https://flyingzc.github.io/2024/06/02/01no/tool/termux/termux01-usage/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Android Termux 安装 Git 和 SSH',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-06-02 20:42:35'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/self/github-dark.css"><meta name="generator" content="Hexo 7.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/images/zc-icon.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">66</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="flyingzc's blog"><span class="site-name">flyingzc's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Android Termux 安装 Git 和 SSH</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-01T16:00:00.000Z" title="发表于 2024-06-02 00:00:00">2024-06-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-06-02T12:42:35.140Z" title="更新于 2024-06-02 20:42:35">2024-06-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Termux/">Termux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Android Termux 安装 Git 和 SSH"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Android-使用-Termux-安装-Git-和-SSH"><a href="#Android-使用-Termux-安装-Git-和-SSH" class="headerlink" title="Android 使用 Termux 安装 Git 和 SSH"></a>Android 使用 Termux 安装 Git 和 SSH</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在 Android 上使用 Git 客户端。<br>可选工具：<br>1.Pocket Git &amp; MGit 客户端<br>2.Termux 安装 Git(选用)<br>下面介绍使用 Termux 安装 Git 和通过 SSH 远程连接 Termux。</p>
+<h2 id="1-换源"><a href="#1-换源" class="headerlink" title="1.换源"></a>1.换源</h2><p>运行 <code>termux-change-repo</code> 命令，通过图形界面替换成 TUNA&#x2F;BFSU 镜像源即可。</p>
+<h2 id="2-ssh"><a href="#2-ssh" class="headerlink" title="2.ssh"></a>2.ssh</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">安装open-ssh</span><br>pkg install openssh<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">报错:CANNOT LINK EXECUTABLE <span class="hljs-string">&quot;ssh-keygen&quot;</span>: library <span class="hljs-string">&quot;libcrypto.so.3&quot;</span> not found: needed by main executable</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">解决：安装 openssl1.1-tool。这里必须要指定版本，否则报错 library “libssl.so.1.1“ not found</span><br>pkg install openssl1.1-tool<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">生成密钥</span><br>ssh-keygen -A<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">启动ssh</span><br>sshd<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看用户名</span><br>whoami<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看ip</span><br>ifconfig<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">设置密码</span><br>passwd<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">远程登录ssh连接termux,默认端口8022</span><br>ssh -p8022 uxxx@192.168.1.1<br></code></pre></td></tr></table></figure>
+
+<h2 id="3-文件访问权限"><a href="#3-文件访问权限" class="headerlink" title="3.文件访问权限"></a>3.文件访问权限</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">termux-setup-storage<br></code></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">/data/data/com.termux/files/usr/bin/termux-setup-storage: line 24: 25567 Aborted                 am broadcast --user 0 --es com.termux.app.reload_style storage -a com.termux.app.reload_style com.termux &gt; /dev/null<br></code></pre></td></tr></table></figure>
+
+<p>解决：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pkg install termux-am<br></code></pre></td></tr></table></figure>
+
+<h2 id="安装-Git"><a href="#安装-Git" class="headerlink" title="安装 Git"></a>安装 Git</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">pkg install git<br></code></pre></td></tr></table></figure>
+<p>clone 项目。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/termux/">termux-change-repo换源</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/sky_jiangcheng/article/details/131222465">mac ssh 连接 android termux</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42560204/article/details/125670804">library “libssl.so.1.1“ not found解决</a><br><a target="_blank" rel="noopener" href="https://github.com/termux/termux-app/issues/3647">termux-setup-storage输出line 24: 25567 Aborted解决</a><br><a target="_blank" rel="noopener" href="https://www.sqlsec.com/2018/05/termux.html">Termux配置教程</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io">flyingzc</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io/2024/06/02/01no/tool/termux/termux01-usage/">https://flyingzc.github.io/2024/06/02/01no/tool/termux/termux01-usage/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://flyingzc.github.io" target="_blank">flyingzc's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Termux/">Termux</a><a class="post-meta__tags" href="/tags/Tool/">Tool</a></div><div class="post_share"><div class="social-share" data-image="/images/zc-icon.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/06/28/01no/omid/omid02-timestamp-oracle/" title="Apache Omid Timestamp Oracle 组件实现原理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Apache Omid Timestamp Oracle 组件实现原理</div></div></a></div><div class="next-post pull-right"><a href="/2024/05/30/01no/omid/omid01-build/" title="Apache Omid Idea 环境搭建"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Apache Omid Idea 环境搭建</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/images/zc-icon.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">flyingzc</div><div class="author-info__description">不积跬步无以至千里<br/>不积小流无以成江海</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">66</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">24</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FlyingZC"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FlyingZC" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">FlyingZC's Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Android-%E4%BD%BF%E7%94%A8-Termux-%E5%AE%89%E8%A3%85-Git-%E5%92%8C-SSH"><span class="toc-number">1.</span> <span class="toc-text">Android 使用 Termux 安装 Git 和 SSH</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%8D%A2%E6%BA%90"><span class="toc-number">1.2.</span> <span class="toc-text">1.换源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-ssh"><span class="toc-number">1.3.</span> <span class="toc-text">2.ssh</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%96%87%E4%BB%B6%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">1.4.</span> <span class="toc-text">3.文件访问权限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-Git"><span class="toc-number">1.5.</span> <span class="toc-text">安装 Git</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">1.6.</span> <span class="toc-text">参考</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/28/01no/omid/omid02-timestamp-oracle/" title="Apache Omid Timestamp Oracle 组件实现原理">Apache Omid Timestamp Oracle 组件实现原理</a><time datetime="2024-06-27T16:00:00.000Z" title="发表于 2024-06-28 00:00:00">2024-06-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/02/01no/tool/termux/termux01-usage/" title="Android Termux 安装 Git 和 SSH">Android Termux 安装 Git 和 SSH</a><time datetime="2024-06-01T16:00:00.000Z" title="发表于 2024-06-02 00:00:00">2024-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/05/30/01no/omid/omid01-build/" title="Apache Omid Idea 环境搭建">Apache Omid Idea 环境搭建</a><time datetime="2024-05-29T16:00:00.000Z" title="发表于 2024-05-30 00:00:00">2024-05-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/26/01no/mysql/MySQL%E9%A9%B1%E5%8A%A8add-batch%E4%BC%98%E5%8C%96%E5%AE%9E%E7%8E%B0/" title="MySQL 驱动 Add Batch 优化实现">MySQL 驱动 Add Batch 优化实现</a><time datetime="2024-03-25T16:00:00.000Z" title="发表于 2024-03-26 00:00:00">2024-03-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/05/01no/shardingsphere/ShardingSphere-SQL%E8%A7%A3%E6%9E%90Issue%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/" title="ShardingSphere-SQL 解析 Issue 处理流程">ShardingSphere-SQL 解析 Issue 处理流程</a><time datetime="2024-03-04T16:00:00.000Z" title="发表于 2024-03-05 00:00:00">2024-03-05</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By flyingzc</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
