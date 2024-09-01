@@ -1,0 +1,6 @@
+# hexo robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://flyingzc.github.io/sitemap.xml
+Sitemap: https://flyingzc.github.io/baidusitemap.xml
