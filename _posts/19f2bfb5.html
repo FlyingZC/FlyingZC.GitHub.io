@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Zookeeper选举流程 | flyingzc's blog</title><meta name="author" content="flyingzc"><meta name="copyright" content="flyingzc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="leader选举相关线程QuorumCnxManager : 管理者,包含发送 和 接收 队列.持有 listener. QuorumCnxManager.Listener : 监听 并 建立 server 之间的连接. FastLeaderElection.Messenger.SendWorker消息生产者.循环 从发送队列 queueSendMap 中取消息(出队)并发送出去.并将该消息存入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper选举流程">
+<meta property="og:url" content="https://flyingzc.github.io/_posts/19f2bfb5.html">
+<meta property="og:site_name" content="flyingzc&#39;s blog">
+<meta property="og:description" content="leader选举相关线程QuorumCnxManager : 管理者,包含发送 和 接收 队列.持有 listener. QuorumCnxManager.Listener : 监听 并 建立 server 之间的连接. FastLeaderElection.Messenger.SendWorker消息生产者.循环 从发送队列 queueSendMap 中取消息(出队)并发送出去.并将该消息存入">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://flyingzc.github.io/images/zc-icon.jpeg">
+<meta property="article:published_time" content="2019-02-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-09-02T10:31:55.025Z">
+<meta property="article:author" content="flyingzc">
+<meta property="article:tag" content="Zookeeper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://flyingzc.github.io/images/zc-icon.jpeg"><link rel="shortcut icon" href="/images/zc-icon.jpeg"><link rel="canonical" href="https://flyingzc.github.io/_posts/19f2bfb5.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="googleb7ed7c2cc0631efa"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: '',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Zookeeper选举流程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-09-02 18:31:55'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/self/github-dark.css"><meta name="generator" content="Hexo 7.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/images/zc-icon.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">24</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="flyingzc's blog"><span class="site-name">flyingzc's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Zookeeper选举流程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-02-17T16:00:00.000Z" title="发表于 2019-02-18 00:00:00">2019-02-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-02T10:31:55.025Z" title="更新于 2024-09-02 18:31:55">2024-09-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Zookeeper/">Zookeeper</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Zookeeper选举流程"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="leader选举相关线程"><a href="#leader选举相关线程" class="headerlink" title="leader选举相关线程"></a>leader选举相关线程</h3><p>QuorumCnxManager : 管理者,包含发送 和 接收 队列.持有 listener.</p>
+<p>QuorumCnxManager.Listener : 监听 并 建立 server 之间的连接.</p>
+<p>FastLeaderElection.Messenger.SendWorker<br>消息生产者.循环 从发送队列 queueSendMap 中取消息(出队)并发送出去.并将该消息存入 lastMessageSent 中.</p>
+<p>FastLeaderElection.Messenger.RecvWorker<br>消息消费者.循环 接收线程从底层 Socket 收到报文后放到 recvQueue 队列中,等待 Messenger 调用 pollRecvQueue 方法获取消息.</p>
+<h3 id="leader选举流程"><a href="#leader选举流程" class="headerlink" title="leader选举流程"></a>leader选举流程</h3><p>启动时选举<br>选举算法的创建之前先创建 QuorumCnxManager,它通过 TCP 协议来进行 leader 选举.<br>每一对server之间都会保持一个TCP链接.<br><code>zookeeper服务之间都是配置myid大的作为客户端连接,myid小的作为服务器端</code>.<br>创建server端的发送线程和接收线程.</p>
+<p>投票默认先投自己,投票信息包括(sid,zxid,echo),将投票信息入待发送队列,等待sendWorker线程将投票发送给所有其他server.</p>
+<p>下面一直循环操作,直到选出Leader为止.<br>从接收队列中取出接收到的投票,校验投票信息中的sid和所投票的leader.</p>
+<p>将接收到的投票 和 自己的投票 pk.<br>比较优先级 <code>epoch &gt; zxid &gt; sid</code>.<br>判断投票消息里的 epoch 周期是不是比当前的大,如果大则消息中id对应的服务器就是leader.<br>若epoch相等则判断zxid,如果消息里的zxid大,则消息中id对应的服务器就是leader.<br>若前面两个都相等那就比较服务器id,若大,则其就是leader.</p>
+<p>更新自己的投票,再向集群中所有机器发出去.</p>
+<p>每次投票后,当前服务器都会统计本轮接收到的所有投票(recvset中投票一致数),若有过半机器接收到了相同的投票信息,则认为选出了leader.</p>
+<p>变更状态,following 或 leading.</p>
+<p>leader挂了选举<br>其余非Observer服务器都会将自己状态变更为 LOOKING,进入leader选举流程.</p>
+<h3 id="QuorumPeer-线程逻辑"><a href="#QuorumPeer-线程逻辑" class="headerlink" title="QuorumPeer 线程逻辑"></a>QuorumPeer 线程逻辑</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">- QuorumPeer线程run()逻辑 用来进行选举，以及选举后进入各角色，角色被打破重新再进行选举<br>    - 无限循环判断状态 while (running)<br>        - 若是LOOKING状态 选举模式，启动FastLeaderElection. 进行选举,并设置投票. 选举策略,默认为FastLeaderElection. setCurrentVote(makeLEStrategy().lookForLeader()); 结束选举后,确定各个server的状态,下一轮循环时,则会走下面的各个角色的启动逻辑<br>            - FastLeaderElection.lookForLeader()中 开始新一轮leader选举。每当我们的QuorumPeer将其状态更改为LOOKING时， 都会调用此方法，并向所有其他server发送通知。 <br>            - HashMap&lt;Long, Vote&gt; recvset recvset用于记录当前服务器在本轮次的Leader选举中收到的所有外部投票  HashMap&lt;Long, Vote&gt; outofelection  更新逻辑时钟.每进行一轮选举,都需要更新逻辑时钟 logicalclock.incrementAndGet();  更新选票(选自己,sid, zxid, epoch) updateProposal(getInitId(), getInitLastLoggedZxid(), getPeerEpoch());  向其他服务器发送自己的选票 sendNotifications();<br>            - loop:如果是竞选状态则一直循环(本服务器状态为LOOKING并且还未选出leader), 直到选举出结果<br>                - 若未接收到其他服务器发送的选票 if(n == null) &#123;&#125;<br>                    - if(manager.haveDelivered())&#123;// manager已经发送了所有选票消息(发送队列已经为空)     sendNotifications();// 向所有其他服务器发送消息 &#125;<br>                        - FastLeaderElection.sendNotifications()中 遍历所有sid(投票参与者集合),分别创建 投票信息. 将创建的所有投票信息存入投票发送队列,用于保存待发送的选票. (一个投票信息 会创建sid个消息,用于发送给所有的server) sendqueue.offer(notmsg);<br>                    - else &#123;// 还未发送完所有投票消息   manager.connectAll();// 连接其他每个服务器 &#125;<br>                        - QuorumCnxManager.connectAll()中 final ConcurrentHashMap&lt;Long, ArrayBlockingQueue&lt;ByteBuffer&gt;&gt; queueSendMap; // sid -&gt; buffer queue,消息发送队列，用于保存那些待发送的消息，按照SID进行分组 遍历queueSendMap,分别connectOne(sid);<br>                            - QuorumCnxManager.connectOne(sid) 尝试使用其electionAddr与id sid建立与服务器的连接。 本server作为客户端向sid的server发起链接请求. 若两个server间未建立连接(即ConcurrentHashMap&lt;Long, SendWorker&gt; senderWorkerMap查不到), 则建立socket连接(默认同步)<br>                - 校验投票信息中的sid和所投票的leader. 若投票者servers集合中 包含 接收到消息中的服务器id 和 n.leader(投票消息中的leader) else if (validVoter(n.sid) &amp;&amp; validVoter(n.leader)) &#123;&#125;<br>                    - 判断给当前server发投票信息的sender的状态 若是FOLLOWING状态<br>                        - 1.若选票中的推选者(sender)的选举周期 大于 当前的 逻辑时钟(说明是新一轮选举中的选票),则替换选票并发送消息<br>                            - 更新(重新设置)自身的逻辑时钟,清空投票信息.<br>                            - 若能选出较优的leader [1],更新选票结果.否则使用自己的投票信息<br>                                - [1].FastLeaderElection.totalOrderPredicate()中 比较优先级 epoch &gt; zxid &gt; sid 判断消息里的epoch周期是不是比当前的大,如果大则消息中id对应的服务器就是leader. 若epoch相等则判断zxid,如果消息里的zxid大,则消息中id对应的服务器就是leader. 若前面两个都相等那就比较服务器id,若大,则其就是leader.<br>                        - 2.如果选举周期小于自身的逻辑时钟,说明对方在一个比较早的选举周期中,不作处理 else if (n.electionEpoch &lt; logicalclock.get()) <br>                        - 3.两者时钟相等,调用totalOrderPredicate()判断是否需要更新当前服务器的选票,若更新了选票就广播给其他服务器 else if (totalOrderPredicate(n.leader, n.zxid, n.peerEpoch,proposedLeader, proposedZxid, proposedEpoch)) &#123;   updateProposal(n.leader, n.zxid, n.peerEpoch);// 更新选票   sendNotifications();// 发送消息 &#125;<br>                        - recvset用于记录 当前服务器 在 本轮次 的 Leader选举中收到的 所有 外部投票 recvset.put(n.sid, new Vote(n.leader, n.zxid, n.electionEpoch, n.peerEpoch));<br>                        - 若可以结束选举(判断投票一致数 是否足以结束选举,如大于1/2)<br>                            - 验证提议的leader是否有任何变化,默认等待20毫秒.若无变化则选举结束. (看看接收队列里还有没有新的选票).要是有新的 较优 的选票,则不能结束选举.<br>                        - 一旦我们没有从接收队列中读取任何新的相关消息,即可结束选举<br>                            - 设置自身状态 leader or follower or observer<br>                            - 清空接收队列 recvqueue.clear(),返回投票<br>                    - 若是OBSERVING状态<br>                        - 不参与选举,do nothing<br>                    - 若是FOLLOWING状态<br>                        - 和下面的LEADING状态逻辑相同<br>                    - 若是LEADING状态<br>                        - 若推选者的逻辑时钟和当前server相等 if(n.electionEpoch == logicalclock.get())<br>                            - 将该服务器和选票信息放入recvset中<br>                            - 判断是否完成了leader选举(投票数超过1/2) if(ooePredicate(recvset, outofelection, n)) &#123;&#125;<br>                                - 设置本server的状态(Leader或follower或observer)<br>                                - 创建并返回最终投票信息<br>                                - 清空recvqueue队列的选票<br>        - 若是OBSERVING状态 启动Observer observer.observeLeader();<br>        - 若是FOLLOWING状态 启动Follower. follower.followLeader();<br>            - // 参见follower启动逻辑<br>        - 若是LEADING状态 启动Leader. Leader选举完成之后，Peer确认了自己是Leader的身份，在 QuromPeer的主线程中执行Leader的逻辑 setLeader(makeLeader(logFactory)); // 创建Leader对象，并创建Server绑定在QuorumAddress上，用于和其他Follower之间相互通信 leader.lead();// Leader的真正的逻辑<br>            - // 参见leader启动逻辑<br></code></pre></td></tr></table></figure>
+
+<h3 id="QuorumCnxManager-线程逻辑"><a href="#QuorumCnxManager-线程逻辑" class="headerlink" title="QuorumCnxManager 线程逻辑"></a>QuorumCnxManager 线程逻辑</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">- QuorumCnxManager<br>    - 作用<br>        - 选举相关连接管理器,包含发送 和 接收 队列.持有 listener. 使用TCP通信,负责各台服务器之间的底层Leader选举过程中的网络通信. QuorumCnxManager可以保证每对peer之间只有一个连接, 如果有server发起新的连接,则比较sid,sid大的保留连接,小的放弃连接(只能大的连接小的).<br>    - 成员变量<br>        - sid -&gt; SendWorker.每个SenderWorker消息发送器,都对应一台远程Zookeeper服务器,负责消息的发送,按照SID进行分组. ConcurrentHashMap&lt;Long, SendWorker&gt; senderWorkerMap;<br>        - sid -&gt; buffer queue,消息发送队列,用于保存那些待发送的消息.按照SID进行分组 ConcurrentHashMap&lt;Long, ArrayBlockingQueue&lt;ByteBuffer&gt;&gt; queueSendMap;<br>        - 最近发送过的消息,为每个SID保留最近发送过的一个消息 ConcurrentHashMap&lt;Long, ByteBuffer&gt; lastMessageSent;<br>        - 所有收到的消息都放到recvQueue中 public final ArrayBlockingQueue&lt;Message&gt; recvQueue;<br></code></pre></td></tr></table></figure>
+
+<h3 id="QuorumCnxManager-Listener-线程逻辑"><a href="#QuorumCnxManager-Listener-线程逻辑" class="headerlink" title="QuorumCnxManager.Listener 线程逻辑"></a>QuorumCnxManager.Listener 线程逻辑</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">- QuorumCnxManager.Listener 监听 并 建立server之间的连接. 该线程监听端口.绑定地址开启ServerSocket服务, 用来侦听其他server连接,进行集群间选举,投票,数据同步<br>    - run()逻辑<br>        - 开启选举端口.循环 等待接收socket连接请求,处理接收连接.<br>            - receiveConnection(client);// 处理接收连接<br>                - QuorumCnxManager.receiveConnection()中<br>                    - QuorumCnxManager.handleConnection(sock, din)中 从socket中读取到sid信息, 1.若对方sid小于自己sid,立马关闭连接.自己做为client向对方请求建立连接. **注意zk服务之间都是配置myid大的作为客户端连接,myid小的作为服务器端* closeSocket(sock); connectOne(sid);// 创建新连接<br>                    - 2.若对方sid大于自己sid,则启动工作线程以接收数据， 创建server端的发送线程任务和接收线程任务, 并且启动任务准备发送和接收client端数据. SendWorker sw = new SendWorker(sock, sid);// 发送线程 RecvWorker rw = new RecvWorker(sock, din, sid, sw);// 接收线程  // 启动 发送线程 和 接收线程 sw.start(); rw.start();  // 参见sendWorker和recvWorker逻辑<br></code></pre></td></tr></table></figure>
+
+<h3 id="FastLeaderElection-Messenger-SendWorker-线程逻辑"><a href="#FastLeaderElection-Messenger-SendWorker-线程逻辑" class="headerlink" title="FastLeaderElection.Messenger.SendWorker 线程逻辑"></a>FastLeaderElection.Messenger.SendWorker 线程逻辑</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">- FastLeaderElection.Messenger.SendWorker 投票信息发送线程<br>    - run()逻辑<br>        - 循环 从发送队列queueSendMap中取消息(出队)并发送出去.并将该消息存入lastMessageSent中.<br></code></pre></td></tr></table></figure>
+
+<h3 id="FastLeaderElection-Messenger-RecvWorker-线程逻辑"><a href="#FastLeaderElection-Messenger-RecvWorker-线程逻辑" class="headerlink" title="FastLeaderElection.Messenger.RecvWorker 线程逻辑"></a>FastLeaderElection.Messenger.RecvWorker 线程逻辑</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">- FastLeaderElection.Messenger.RecvWorker 投票信息接收线程<br>    - run()逻辑<br>        - 循环 接收线程从底层Socket收到报文后放到recvQueue队列中,等待Messenger调用pollRecvQueue方法获取消息<br></code></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io">flyingzc</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io/_posts/19f2bfb5.html">https://flyingzc.github.io/_posts/19f2bfb5.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://flyingzc.github.io" target="_blank">flyingzc's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Zookeeper/">Zookeeper</a></div><div class="post_share"><div class="social-share" data-image="/images/zc-icon.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/_posts/e9f7eeef.html" title="Zookeeper Processor"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Zookeeper Processor</div></div></a></div><div class="next-post pull-right"><a href="/_posts/24d0acdf.html" title="Zookeeper启动流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Zookeeper启动流程</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/_posts/332ec3c.html" title="Zookeeper环境搭建"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-01-17</div><div class="title">Zookeeper环境搭建</div></div></a></div><div><a href="/_posts/24d0acdf.html" title="Zookeeper启动流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-01-18</div><div class="title">Zookeeper启动流程</div></div></a></div><div><a href="/_posts/14a97bbf.html" title="Zookeeper数据同步流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-01-17</div><div class="title">Zookeeper数据同步流程</div></div></a></div><div><a href="/_posts/e9f7eeef.html" title="Zookeeper Processor"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-03-08</div><div class="title">Zookeeper Processor</div></div></a></div><div><a href="/_posts/e9598300.html" title="Zookeeper事务日志，快照"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-05-07</div><div class="title">Zookeeper事务日志，快照</div></div></a></div><div><a href="/_posts/de0c71a1.html" title="Zookeeper应用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-05-07</div><div class="title">Zookeeper应用</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/images/zc-icon.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">flyingzc</div><div class="author-info__description">不积跬步无以至千里<br/>不积小流无以成江海</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">24</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FlyingZC"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FlyingZC" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">FlyingZC's Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#leader%E9%80%89%E4%B8%BE%E7%9B%B8%E5%85%B3%E7%BA%BF%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">leader选举相关线程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#leader%E9%80%89%E4%B8%BE%E6%B5%81%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">leader选举流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#QuorumPeer-%E7%BA%BF%E7%A8%8B%E9%80%BB%E8%BE%91"><span class="toc-number">3.</span> <span class="toc-text">QuorumPeer 线程逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#QuorumCnxManager-%E7%BA%BF%E7%A8%8B%E9%80%BB%E8%BE%91"><span class="toc-number">4.</span> <span class="toc-text">QuorumCnxManager 线程逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#QuorumCnxManager-Listener-%E7%BA%BF%E7%A8%8B%E9%80%BB%E8%BE%91"><span class="toc-number">5.</span> <span class="toc-text">QuorumCnxManager.Listener 线程逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FastLeaderElection-Messenger-SendWorker-%E7%BA%BF%E7%A8%8B%E9%80%BB%E8%BE%91"><span class="toc-number">6.</span> <span class="toc-text">FastLeaderElection.Messenger.SendWorker 线程逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FastLeaderElection-Messenger-RecvWorker-%E7%BA%BF%E7%A8%8B%E9%80%BB%E8%BE%91"><span class="toc-number">7.</span> <span class="toc-text">FastLeaderElection.Messenger.RecvWorker 线程逻辑</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/2a320cf3.html" title="H2 Database SQL 插入流程">H2 Database SQL 插入流程</a><time datetime="2024-09-02T16:00:00.000Z" title="发表于 2024-09-03 00:00:00">2024-09-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/f2d46e6c.html" title="H2 database MVStore 初始化">H2 database MVStore 初始化</a><time datetime="2024-08-19T23:00:00.000Z" title="发表于 2024-08-20 07:00:00">2024-08-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/396947c7.html" title="H2 database IDEA 环境搭建">H2 database IDEA 环境搭建</a><time datetime="2024-08-19T16:00:00.000Z" title="发表于 2024-08-20 00:00:00">2024-08-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/52283942.html" title="Apache Omid Client 组件实现原理">Apache Omid Client 组件实现原理</a><time datetime="2024-07-22T16:00:00.000Z" title="发表于 2024-07-23 00:00:00">2024-07-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/b261031.html" title="Ubuntu Desktop Docker 配置代理">Ubuntu Desktop Docker 配置代理</a><time datetime="2024-07-16T16:00:00.000Z" title="发表于 2024-07-17 00:00:00">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By flyingzc</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
