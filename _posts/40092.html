@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Dubbo 服务引用 | flyingzc's blog</title><meta name="author" content="flyingzc"><meta name="copyright" content="flyingzc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="官网 客户端服务引用客户端服务引用 demo12DemoService demoService &#x3D; (DemoService) context.getBean(&quot;demoService&quot;); &#x2F;&#x2F; get remote service proxydemoService.sayHello(&quot;world&quot;); dubbo 在客户端动态的生成了一个该 Interf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dubbo 服务引用">
+<meta property="og:url" content="https://flyingzc.github.io/_posts/40092.html">
+<meta property="og:site_name" content="flyingzc&#39;s blog">
+<meta property="og:description" content="官网 客户端服务引用客户端服务引用 demo12DemoService demoService &#x3D; (DemoService) context.getBean(&quot;demoService&quot;); &#x2F;&#x2F; get remote service proxydemoService.sayHello(&quot;world&quot;); dubbo 在客户端动态的生成了一个该 Interf">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://flyingzc.github.io/images/zc-icon.jpeg">
+<meta property="article:published_time" content="2019-11-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-09-23T11:17:32.403Z">
+<meta property="article:author" content="flyingzc">
+<meta property="article:tag" content="Dubbo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://flyingzc.github.io/images/zc-icon.jpeg"><link rel="shortcut icon" href="/images/zc-icon.jpeg"><link rel="canonical" href="https://flyingzc.github.io/_posts/40092.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="googleb7ed7c2cc0631efa"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: '',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Dubbo 服务引用',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-09-23 19:17:32'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/self/github-dark.css"><meta name="generator" content="Hexo 7.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/images/zc-icon.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">24</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="flyingzc's blog"><span class="site-name">flyingzc's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Dubbo 服务引用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-11-28T16:00:00.000Z" title="发表于 2019-11-29 00:00:00">2019-11-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-23T11:17:32.403Z" title="更新于 2024-09-23 19:17:32">2024-09-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Dubbo/">Dubbo</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Dubbo 服务引用"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p><a target="_blank" rel="noopener" href="https://dubbo.apache.org/zh-cn/docs/source_code_guide/refer-service.html">官网</a></p>
+<h1 id="客户端服务引用"><a href="#客户端服务引用" class="headerlink" title="客户端服务引用"></a>客户端服务引用</h1><h2 id="客户端服务引用-demo"><a href="#客户端服务引用-demo" class="headerlink" title="客户端服务引用 demo"></a>客户端服务引用 demo</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">DemoService</span> <span class="hljs-variable">demoService</span> <span class="hljs-operator">=</span> (DemoService) context.getBean(<span class="hljs-string">&quot;demoService&quot;</span>); <span class="hljs-comment">// get remote service proxy</span><br>demoService.sayHello(<span class="hljs-string">&quot;world&quot;</span>);<br></code></pre></td></tr></table></figure>
+<p>dubbo 在客户端动态的生成了一个该 Interface 类型的代理类.在这个代理类中封装了远程服务调用的组件.</p>
+<h2 id="DemoService-创建"><a href="#DemoService-创建" class="headerlink" title="DemoService 创建"></a>DemoService 创建</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dubbo:reference</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;demoService&quot;</span> <span class="hljs-attr">group</span>=<span class="hljs-string">&quot;g1&quot;</span> <span class="hljs-attr">check</span>=<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-attr">interface</span>=<span class="hljs-string">&quot;com.alibaba.dubbo.demo.DemoService&quot;</span></span><br><span class="hljs-tag">                     <span class="hljs-attr">client</span>=<span class="hljs-string">&quot;netty4&quot;</span> <span class="hljs-attr">timeout</span>=<span class="hljs-string">&quot;10000&quot;</span> <span class="hljs-attr">callbacks</span>=<span class="hljs-string">&quot;1000&quot;</span> <span class="hljs-attr">registry</span>=<span class="hljs-string">&quot;zk01&quot;</span> <span class="hljs-attr">filter</span>=<span class="hljs-string">&quot;demo2&quot;</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>Spring 容器启动时,AbstractBeanFactory.isFactoryBean() 会判断 demoService 配置的 RootBeanDefinition 的 beanType 为<code>com.alibaba.dubbo.config.spring.ReferenceBean</code>,它是个 FactoryBean,Spring 容器会创建 ReferenceBean 这个 FactoryBean 实例.</p>
+<h2 id="获取-DemoService"><a href="#获取-DemoService" class="headerlink" title="获取 DemoService"></a>获取 DemoService</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">DemoService</span> <span class="hljs-variable">demoService</span> <span class="hljs-operator">=</span> (DemoService) context.getBean(<span class="hljs-string">&quot;demoService&quot;</span>); <span class="hljs-comment">// get remote service proxy</span><br></code></pre></td></tr></table></figure>
+<p>会调用 factoryBean.getObject() 方法,即调用 ReferenceBean.getObject() 创建 demoService 实例.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/apache/dubbo/pull/2754">DUBBO-issue-2757</a> debug 时候遇到这个 bug 了,需要在 idea 里设置下.</p>
+<p><code>在服务提供方,Invoker 用于调用服务提供类.在服务消费方,Invoker 用于执行远程调用.</code></p>
+<h2 id="客户端服务引用流程"><a href="#客户端服务引用流程" class="headerlink" title="客户端服务引用流程"></a>客户端服务引用流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">- refer<br>- context.getBean(&quot;demoService&quot;)<br>    - ReferenceBean.getObject():通过这个 FactoryBean 创建 demoService 实例<br>        - ReferenceConfig.init(): 调用父类ReferenceConfig.init()<br>            - ReferenceConfig.createProxy(map)创建DemoService代理对象<br>            - 1.远程引用的逻辑<br>            - 1.1.loadRegistries()加载注册中心URL数组<br>            - 1.2.引用服务invoker = refprotocol.refer(interfaceClass, urls.get(0))<br>                - Protocol$Adaptive.refer()<br>                    - ProtocolFilterWrapper.refer()<br>                        - ProtocolListenerWrapper.refer()<br>                            - RegistryProtocol.refer()<br>                            - 1.获取注册中心的url<br>                            - 2.获得注册中心registryFactory.getRegistry(url)<br>                            - 3.执行服务引用doRefer(cluster, registry, type, url)<br>                                - RegistryProtocol.doRefer()<br>                                - 1.根据DemoService的type和url创建RegistryDirectory 对象,并设置注册中心<br>                                - 2.向注册中心注册自己(服务消费者)registry.register()<br>                                - 3.向注册中心订阅 服务提供者 + 路由规则 + 配置规则<br>                                - 4.通过cluster创建Invoker对象cluster.join(directory)并返回Invoker<br>            - 1.3.生成invoker的代理对象并返回 return (T) proxyFactory.getProxy(invoker)<br>                - ProxyFactory$Adaptive().getProxy()<br>                    - JavassistProxyFactory.getProxy(invoker, interfaces)<br>                        - Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker))<br>                            - new InvokerInvocationHandler(invoker) // invoker为MockClusterInvoker实例<br></code></pre></td></tr></table></figure>
+
+<h1 id="客户端服务调用"><a href="#客户端服务调用" class="headerlink" title="客户端服务调用"></a>客户端服务调用</h1><p>demoService.sayHello(“world”)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">- consumer-call<br>- demoService.sayHello(&quot;world&quot;)<br>    - com.alibaba.dubbo.common.bytecode.proxy0.sayHello(name) // 服务代理类<br>        - InvokerInvocationHandler.invoke(proxy, method, args)<br>        - 1.获取参数名和方法名<br>        - 2.RPC调用invoker.invoke(new RpcInvocation(method, args)).recreate()<br>            - 1.将method和参数封装成RpcInvocation对象<br>            - 2.MockClusterInvoker.invoke(invocation)<br>                - result = this.invoker.invoke(invocation)调用FailoverClusterInvoker.invoke(),先走父类AbstractClusterInvoker.invoke()<br>                    - 1.通过 directory 获得所有服务提供者 Invoker 集合RegistryDirectory.list(Invocation invocation)<br>                        - AbstractClusterInvoker.list(invocation)<br>                            - 1.AbstractDirectory.list(invocation)<br>                                - RegistryDirectory.doList(invocation)<br>                                - 1.从localMethodInvokerMap中根据methodName获取所有匹配的invokers<br>                            - 2.根据routers,调用router.route()筛选invokers<br>                                - MockInvokersSelector.route()<br>                                    - 对于普通invoker集合,调用MockInvokersSelector.getNormalInvokers(invokers)<br>                                        - 不包含 MockInvoker 的情况下，直接返回 `invokers` 集合<br>                            - 3.获取loadBalance,默认是RandomLoadBalance实例<br>                            - 4.doInvoke(invocation, invokers, loadbalance)执行调用<br>                                - FailoverClusterInvoker.doInvoke()中<br>                                - 1.获取最大可调用次数: 最大可重试次数 + 1<br>                                - 2.select(loadbalance, invocation, copyinvokers, invoked)根据负载均衡机制从 copyinvokers 中选择一个Invoker<br>                                    - AbstractClusterInvoker.doselect()<br>                                    - 1.若只有一个invoker直接选择<br>                                    - 2.如果只有两个Invoker,轮循取<br>                                    - 3.其余loadbalance.select(invokers, getUrl(), invocation)使用loadbalance获取invoker对象<br>                                        - // doSelect()具体的loadbalance算法实现<br>                                - 3.将选中的invoker添加到invoked(保存已经调用过的invokers)中,并设置到context里<br>                                - 4.发起RPC调用并返回result,invoker.invoke(invocation)<br>                                    - invokerWrapper.invoke(invocation)<br>                                        - ProtocolFilterWrapper$1.invoke()后面会调用filter链<br>                            - 5.调用成功就直接返回result了,失败则根据重试次数和策略重新选中invoker调用<br></code></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io">flyingzc</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io/_posts/40092.html">https://flyingzc.github.io/_posts/40092.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://flyingzc.github.io" target="_blank">flyingzc's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Dubbo/">Dubbo</a></div><div class="post_share"><div class="social-share" data-image="/images/zc-icon.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/_posts/40056.html" title="Dubbo 服务暴露"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Dubbo 服务暴露</div></div></a></div><div class="next-post pull-right"><a href="/_posts/18445.html" title="Tomcat Debug"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Tomcat Debug</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/_posts/16223.html" title="Dubbo 整理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-26</div><div class="title">Dubbo 整理</div></div></a></div><div><a href="/_posts/38563.html" title="Dubbo SPI 机制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-27</div><div class="title">Dubbo SPI 机制</div></div></a></div><div><a href="/_posts/40056.html" title="Dubbo 服务暴露"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-29</div><div class="title">Dubbo 服务暴露</div></div></a></div><div><a href="/_posts/38918.html" title="Dubbo Cluster"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-04</div><div class="title">Dubbo Cluster</div></div></a></div><div><a href="/_posts/36799.html" title="Dubbo Provider处理请求"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-05</div><div class="title">Dubbo Provider处理请求</div></div></a></div><div><a href="/_posts/23533.html" title="Dubbo心跳机制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-15</div><div class="title">Dubbo心跳机制</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/images/zc-icon.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">flyingzc</div><div class="author-info__description">不积跬步无以至千里<br/>不积小流无以成江海</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">24</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FlyingZC"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FlyingZC" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">FlyingZC's Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%9C%8D%E5%8A%A1%E5%BC%95%E7%94%A8"><span class="toc-number">1.</span> <span class="toc-text">客户端服务引用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%9C%8D%E5%8A%A1%E5%BC%95%E7%94%A8-demo"><span class="toc-number">1.1.</span> <span class="toc-text">客户端服务引用 demo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DemoService-%E5%88%9B%E5%BB%BA"><span class="toc-number">1.2.</span> <span class="toc-text">DemoService 创建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96-DemoService"><span class="toc-number">1.3.</span> <span class="toc-text">获取 DemoService</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%9C%8D%E5%8A%A1%E5%BC%95%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">1.4.</span> <span class="toc-text">客户端服务引用流程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">客户端服务调用</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/62469.html" title="H2 Database SQL 插入流程">H2 Database SQL 插入流程</a><time datetime="2024-09-02T16:00:00.000Z" title="发表于 2024-09-03 00:00:00">2024-09-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/16340.html" title="H2 database MVStore 初始化">H2 database MVStore 初始化</a><time datetime="2024-08-19T23:00:00.000Z" title="发表于 2024-08-20 07:00:00">2024-08-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/8524.html" title="H2 database IDEA 环境搭建">H2 database IDEA 环境搭建</a><time datetime="2024-08-19T16:00:00.000Z" title="发表于 2024-08-20 00:00:00">2024-08-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/37672.html" title="Apache Omid Client 组件实现原理">Apache Omid Client 组件实现原理</a><time datetime="2024-07-22T16:00:00.000Z" title="发表于 2024-07-23 00:00:00">2024-07-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/_posts/19261.html" title="Ubuntu Desktop Docker 配置代理">Ubuntu Desktop Docker 配置代理</a><time datetime="2024-07-16T16:00:00.000Z" title="发表于 2024-07-17 00:00:00">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By flyingzc</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
