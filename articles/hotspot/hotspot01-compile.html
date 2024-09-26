@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Hotspot编译 | flyingzc's blog</title><meta name="author" content="flyingzc"><meta name="copyright" content="flyingzc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="hotspot8编译参照xiaguang的博客,帮我踩了很多坑,虽然编译过程中还是遇到了一点小问题. 修改 ubuntu18 adp 源1sudo vi &#x2F;etc&#x2F;apt&#x2F;sources.list  最好搜索一下最新的国内源 12345678910deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; bionic main restricted univ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hotspot编译">
+<meta property="og:url" content="https://flyingzc.github.io/articles/hotspot/hotspot01-compile.html">
+<meta property="og:site_name" content="flyingzc&#39;s blog">
+<meta property="og:description" content="hotspot8编译参照xiaguang的博客,帮我踩了很多坑,虽然编译过程中还是遇到了一点小问题. 修改 ubuntu18 adp 源1sudo vi &#x2F;etc&#x2F;apt&#x2F;sources.list  最好搜索一下最新的国内源 12345678910deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;ubuntu&#x2F; bionic main restricted univ">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://flyingzc.github.io/images/zc-icon.jpeg">
+<meta property="article:published_time" content="2019-12-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-09-23T11:48:42.563Z">
+<meta property="article:author" content="flyingzc">
+<meta property="article:tag" content="Hotspot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://flyingzc.github.io/images/zc-icon.jpeg"><link rel="shortcut icon" href="/images/zc-icon.jpeg"><link rel="canonical" href="https://flyingzc.github.io/articles/hotspot/hotspot01-compile.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="googleb7ed7c2cc0631efa"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: '',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hotspot编译',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-09-23 19:48:42'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/self/github-dark.css"><meta name="generator" content="Hexo 7.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/images/zc-icon.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">24</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="flyingzc's blog"><span class="site-name">flyingzc's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Hotspot编译</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-12-11T16:00:00.000Z" title="发表于 2019-12-12 00:00:00">2019-12-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-23T11:48:42.563Z" title="更新于 2024-09-23 19:48:42">2024-09-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Hotspot/">Hotspot</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Hotspot编译"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="hotspot8编译"><a href="#hotspot8编译" class="headerlink" title="hotspot8编译"></a>hotspot8编译</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/simoncook/p/11198117.html">参照xiaguang的博客</a>,帮我踩了很多坑,虽然编译过程中还是遇到了一点小问题.</p>
+<h2 id="修改-ubuntu18-adp-源"><a href="#修改-ubuntu18-adp-源" class="headerlink" title="修改 ubuntu18 adp 源"></a>修改 ubuntu18 adp 源</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">sudo vi /etc/apt/sources.list<br></code></pre></td></tr></table></figure>
+
+<p>最好搜索一下最新的国内源</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse<br>deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic main restricted universe multiverse<br>deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse<br>deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-updates main restricted universe multiverse<br>deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse<br>deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-backports main restricted universe multiverse<br>deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse<br>deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-security main restricted universe multiverse<br>deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse<br>deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ bionic-proposed main restricted universe multiverse<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">apt-get update<br></code></pre></td></tr></table></figure>
+
+<h2 id="安装相关依赖"><a href="#安装相关依赖" class="headerlink" title="安装相关依赖"></a>安装相关依赖</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">sudo apt-get install gcc-4.8<br>sudo apt-get install g++-4.8<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">sudo apt-get install  libxext-dev libxrender-dev libxtst-dev libxt-dev<br>sudo apt-get install libcups2-dev<br>sudo apt-get install libfreetype6-dev<br>sudo apt-get install libasound2-dev<br></code></pre></td></tr></table></figure>
+
+<h2 id="clone-hostspot-代码"><a href="#clone-hostspot-代码" class="headerlink" title="clone hostspot 代码"></a>clone hostspot 代码</h2><p>原文是通过 <code>hg clone http://hg.openjdk.java.net/jdk8/jdk8</code> 下载,但是官网速度太慢了.fan了也很慢.</p>
+<p>后来找了个github上的镜像,总是下载一半就出问题:<br><a target="_blank" rel="noopener" href="https://github.com/unofficial-openjdk/openjdk">https://github.com/unofficial-openjdk/openjdk</a></p>
+<p>最后用gitee里的这个镜像,速度很快,tag 也比较全<br><a target="_blank" rel="noopener" href="https://gitee.com/solie/openjdk.git">https://gitee.com/solie/openjdk.git</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">// clone<br>git clone https://gitee.com/solie/openjdk.git<br><br>// 切分支<br>git checkout jdk8-b120 <br><br>git checkout -b jdk8-b120-zc jdk8-b120 <br></code></pre></td></tr></table></figure>
+
+<p>代码路径<br>&#x2F;home&#x2F;flyingzc&#x2F;java&#x2F;workspace&#x2F;01opensource&#x2F;openjdk</p>
+<h2 id="下载并编译-make-3-82"><a href="#下载并编译-make-3-82" class="headerlink" title="下载并编译 make 3.82"></a>下载并编译 make 3.82</h2><p>1.下载地址: <a href="ftp://ftp.gnu.org/gnu/make/make-3.82.tar.gz">ftp://ftp.gnu.org/gnu/make/make-3.82.tar.gz</a></p>
+<p>2.解压<br>flyingzc@ubuntu:~&#x2F;java&#x2F;downloads$ tar -zxvf make-3.82.tar.gz -C .</p>
+<p>3.vim glob&#x2F;glob.c</p>
+<p>将 第 211行, 232行 注释掉,注释后如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">#// #if !defined __alloca &amp;&amp; !defined __GNU_LIBRARY__<br>#// #endif<br></code></pre></td></tr></table></figure>
+
+<h2 id="准备编译-make3-82"><a href="#准备编译-make3-82" class="headerlink" title="准备编译 make3.82"></a>准备编译 make3.82</h2><p>chmod +x configure<br>.&#x2F;configure<br>make<br>.&#x2F;make –version<br><img src="/../../assets/hotspot/001make-success.png" alt="make编译成功"></p>
+<h2 id="将系统的默认-make-链接成-3-82-版本"><a href="#将系统的默认-make-链接成-3-82-版本" class="headerlink" title="将系统的默认 make 链接成 3.82 版本"></a>将系统的默认 make 链接成 3.82 版本</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">cd /usr/bin/<br><br>sudo ln -s  /home/flyingzc/java/soft/make-3.82/make make-3.82<br><br>sudo rm make<br><br>sudo ln -s make-3.82 make<br><br>make --version<br>输出: GNU Make 3.82<br></code></pre></td></tr></table></figure>
+
+<h2 id="确认-gcc-和-g-是4-8版本"><a href="#确认-gcc-和-g-是4-8版本" class="headerlink" title="确认 gcc 和 g++ 是4.8版本"></a>确认 gcc 和 g++ 是4.8版本</h2><h3 id="gcc"><a href="#gcc" class="headerlink" title="gcc"></a>gcc</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">cd /usr/bin<br>sudo rm gcc<br>sudo ln -s gcc-4.8 gcc<br></code></pre></td></tr></table></figure>
+
+<h3 id="g"><a href="#g" class="headerlink" title="g++"></a>g++</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">cd /usr/bin<br>sudo rm g++<br>sudo ln -s g++-4.8 g++<br></code></pre></td></tr></table></figure>
+
+<p>输出</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">flyingzc@ubuntu:/usr/bin$ gcc --version<br>gcc (Ubuntu 4.8.5-4ubuntu8) 4.8.5<br>Copyright (C) 2015 Free Software Foundation, Inc.<br>This is free software; see the source for copying conditions.  There is NO<br>warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.<br><br>flyingzc@ubuntu:/usr/bin$ g++ --version<br>g++ (Ubuntu 4.8.5-4ubuntu8) 4.8.5<br>Copyright (C) 2015 Free Software Foundation, Inc.<br>This is free software; see the source for copying conditions.  There is NO<br></code></pre></td></tr></table></figure>
+
+<h2 id="修改支持的os版本检查"><a href="#修改支持的os版本检查" class="headerlink" title="修改支持的os版本检查"></a>修改支持的os版本检查</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">查看内核版本<br>uname -a<br>Linux ubuntu 5.0.0-37-generic #40~18.04.1-Ubuntu SMP Thu Nov 14 12:06:39 UTC 2019 x86_64 x86_64 x86_64 GNU/Linux<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">hotspot/make/linux/Makefile<br>修改 SUPPORTED_OS_VERSION =... 加上4%,不然4.x的内核不支持.我的ubuntu内核是5.x,需要加上 5%<br></code></pre></td></tr></table></figure>
+
+<h2 id="如果存在build目录则删除"><a href="#如果存在build目录则删除" class="headerlink" title="如果存在build目录则删除"></a>如果存在build目录则删除</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">rm -rf build/<br><br>chmod +x configure<br><br>./configure --with-debug-level=slowdebug<br></code></pre></td></tr></table></figure>
+
+<h2 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">nohup make all &amp; tail -f nohup.out<br></code></pre></td></tr></table></figure>
+
+<h2 id="报错解决"><a href="#报错解决" class="headerlink" title="报错解决"></a>报错解决</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">Running nasgen<br>Exception in thread &quot;main&quot; java.lang.VerifyError: class jdk.nashorn.internal.objects.ScriptFunctionImpl overrides final method setPrototype.(Ljava/lang/Object;)V<br>	at java.lang.ClassLoader.defineClass1(Native Method)<br>	at java.lang.ClassLoader.defineClass(ClassLoader.java:756)<br>	at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)<br>	at java.net.URLClassLoader.defineClass(URLClassLoader.java:468)<br>	at java.net.URLClassLoader.access$100(URLClassLoader.java:74)<br>	at java.net.URLClassLoader$1.run(URLClassLoader.java:369)<br>	at java.net.URLClassLoader$1.run(URLClassLoader.java:363)<br>	at java.security.AccessController.doPrivileged(Native Method)<br>	at java.net.URLClassLoader.findClass(URLClassLoader.java:362)<br>	at java.lang.ClassLoader.loadClass(ClassLoader.java:418)<br>	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:355)<br>	at java.lang.ClassLoader.loadClass(ClassLoader.java:351)<br>	at jdk.nashorn.internal.tools.nasgen.StringConstants.&lt;clinit&gt;(StringConstants.java:85)<br>	at jdk.nashorn.internal.tools.nasgen.MemberInfo.verify(MemberInfo.java:250)<br>	at jdk.nashorn.internal.tools.nasgen.ScriptClassInfo.verify(ScriptClassInfo.java:227)<br>	at jdk.nashorn.internal.tools.nasgen.Main.process(Main.java:108)<br>	at jdk.nashorn.internal.tools.nasgen.Main.processAll(Main.java:88)<br>	at jdk.nashorn.internal.tools.nasgen.Main.main(Main.java:62)<br>make[1]: *** [/home/flyingzc/java/workspace/01opensource/openjdk/build/linux-x86_64-normal-server-slowdebug/nashorn/classes/_the.nasgen.run] Error 1<br>make: *** [nashorn-only] Error 2<br><br><br><br>修改：vim nashorn/make/BuildNashorn.gmk<br>第80行 -cp &quot;$(NASHORN_OUTPUTDIR)/nasgen_classes$(PATH_SEP) <br>第80行将原来的 -cp 修改为 -Xbootclasspath/p:<br></code></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://juejin.im/entry/5a6c36af6fb9a01cb64f05b8">问题的解决方案来自这里</a></p>
+<h2 id="编译成功输出的信息"><a href="#编译成功输出的信息" class="headerlink" title="编译成功输出的信息"></a>编译成功输出的信息</h2><p><img src="/../../assets/hotspot/002compile-success.png" alt="编译成功"></p>
+<h1 id="解压调试符号包"><a href="#解压调试符号包" class="headerlink" title="解压调试符号包"></a>解压调试符号包</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plaintext">openjdk/build/linux-x86_64-normal-server-slowdebug/jdk/lib/amd64/server 目录下<br>unzip libjvm.diz<br></code></pre></td></tr></table></figure>
+<p>解压出来的是 libjvm.debuginfo 调试信息文件</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io">flyingzc</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io/articles/hotspot/hotspot01-compile.html">https://flyingzc.github.io/articles/hotspot/hotspot01-compile.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://flyingzc.github.io" target="_blank">flyingzc's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hotspot/">Hotspot</a></div><div class="post_share"><div class="social-share" data-image="/images/zc-icon.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/articles/zk/zk08_watcher.html" title="Zookeeper Watcher机制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Zookeeper Watcher机制</div></div></a></div><div class="next-post pull-right"><a href="/articles/zk/zk20-lock.html" title="Zookeeper实现分布式锁"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Zookeeper实现分布式锁</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/images/zc-icon.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">flyingzc</div><div class="author-info__description">不积跬步无以至千里<br/>不积小流无以成江海</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">24</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FlyingZC"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FlyingZC" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">FlyingZC's Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#hotspot8%E7%BC%96%E8%AF%91"><span class="toc-number">1.</span> <span class="toc-text">hotspot8编译</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-ubuntu18-adp-%E6%BA%90"><span class="toc-number">1.1.</span> <span class="toc-text">修改 ubuntu18 adp 源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E7%9B%B8%E5%85%B3%E4%BE%9D%E8%B5%96"><span class="toc-number">1.2.</span> <span class="toc-text">安装相关依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#clone-hostspot-%E4%BB%A3%E7%A0%81"><span class="toc-number">1.3.</span> <span class="toc-text">clone hostspot 代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%B9%B6%E7%BC%96%E8%AF%91-make-3-82"><span class="toc-number">1.4.</span> <span class="toc-text">下载并编译 make 3.82</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E7%BC%96%E8%AF%91-make3-82"><span class="toc-number">1.5.</span> <span class="toc-text">准备编译 make3.82</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%86%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%BB%98%E8%AE%A4-make-%E9%93%BE%E6%8E%A5%E6%88%90-3-82-%E7%89%88%E6%9C%AC"><span class="toc-number">1.6.</span> <span class="toc-text">将系统的默认 make 链接成 3.82 版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A1%AE%E8%AE%A4-gcc-%E5%92%8C-g-%E6%98%AF4-8%E7%89%88%E6%9C%AC"><span class="toc-number">1.7.</span> <span class="toc-text">确认 gcc 和 g++ 是4.8版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#gcc"><span class="toc-number">1.7.1.</span> <span class="toc-text">gcc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#g"><span class="toc-number">1.7.2.</span> <span class="toc-text">g++</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E6%94%AF%E6%8C%81%E7%9A%84os%E7%89%88%E6%9C%AC%E6%A3%80%E6%9F%A5"><span class="toc-number">1.8.</span> <span class="toc-text">修改支持的os版本检查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E5%AD%98%E5%9C%A8build%E7%9B%AE%E5%BD%95%E5%88%99%E5%88%A0%E9%99%A4"><span class="toc-number">1.9.</span> <span class="toc-text">如果存在build目录则删除</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91"><span class="toc-number">1.10.</span> <span class="toc-text">编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%A5%E9%94%99%E8%A7%A3%E5%86%B3"><span class="toc-number">1.11.</span> <span class="toc-text">报错解决</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%88%90%E5%8A%9F%E8%BE%93%E5%87%BA%E7%9A%84%E4%BF%A1%E6%81%AF"><span class="toc-number">1.12.</span> <span class="toc-text">编译成功输出的信息</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E5%8E%8B%E8%B0%83%E8%AF%95%E7%AC%A6%E5%8F%B7%E5%8C%85"><span class="toc-number">2.</span> <span class="toc-text">解压调试符号包</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/h2/h2database08-insert.html" title="H2 Database SQL 插入流程">H2 Database SQL 插入流程</a><time datetime="2024-09-02T16:00:00.000Z" title="发表于 2024-09-03 00:00:00">2024-09-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/h2/h2database02-mvstore-init.html" title="H2 Database MVStore 初始化">H2 Database MVStore 初始化</a><time datetime="2024-08-19T23:00:00.000Z" title="发表于 2024-08-20 07:00:00">2024-08-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/h2/h2database01-build.html" title="H2 Database IDEA 环境搭建">H2 Database IDEA 环境搭建</a><time datetime="2024-08-19T16:00:00.000Z" title="发表于 2024-08-20 00:00:00">2024-08-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/omid/omid04-client.html" title="Apache Omid Client 组件实现原理">Apache Omid Client 组件实现原理</a><time datetime="2024-07-22T16:00:00.000Z" title="发表于 2024-07-23 00:00:00">2024-07-23</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/docker/docker03-proxy.html" title="Ubuntu Desktop Docker 配置代理">Ubuntu Desktop Docker 配置代理</a><time datetime="2024-07-16T16:00:00.000Z" title="发表于 2024-07-17 00:00:00">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By flyingzc</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

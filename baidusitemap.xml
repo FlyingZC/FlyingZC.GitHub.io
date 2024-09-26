@@ -1,283 +1,283 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://flyingzc.github.io/articles/dubbo/dubbo04-refer/</loc>
-    <lastmod>2024-09-23</lastmod>
+    <loc>https://flyingzc.github.io/articles/h2/h2database02-mvstore-init.html</loc>
+    <lastmod>2024-09-24</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/h2/h2database01-build/</loc>
-    <lastmod>2024-09-23</lastmod>
+    <loc>https://flyingzc.github.io/articles/h2/h2database01-build.html</loc>
+    <lastmod>2024-09-24</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/h2/h2database02-mvstore-init/</loc>
-    <lastmod>2024-09-23</lastmod>
+    <loc>https://flyingzc.github.io/articles/h2/h2database08-insert.html</loc>
+    <lastmod>2024-09-24</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/h2/h2database08-insert/</loc>
+    <loc>https://flyingzc.github.io/articles/dubbo/dubbo04-refer.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/redis/redis10-lock/</loc>
+    <loc>https://flyingzc.github.io/articles/redis/redis10-lock.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/dubbo/dubbo01-overview/</loc>
+    <loc>https://flyingzc.github.io/articles/dubbo/dubbo01-overview.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/dubbo/dubbo02-spi/</loc>
+    <loc>https://flyingzc.github.io/articles/dubbo/dubbo02-spi.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/dubbo/dubbo03-export/</loc>
+    <loc>https://flyingzc.github.io/articles/dubbo/dubbo03-export.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/dubbo/dubbo05-cluster/</loc>
+    <loc>https://flyingzc.github.io/articles/dubbo/dubbo05-cluster.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/dubbo/dubbo06-provider/</loc>
+    <loc>https://flyingzc.github.io/articles/dubbo/dubbo06-provider.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/dubbo/dubbo07-heartbeat/</loc>
+    <loc>https://flyingzc.github.io/articles/dubbo/dubbo07-heartbeat.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/narayana/narayana03-begin/</loc>
+    <loc>https://flyingzc.github.io/articles/narayana/narayana03-begin.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/narayana/narayana05-commit/</loc>
+    <loc>https://flyingzc.github.io/articles/narayana/narayana05-commit.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/narayana/narayana06-recovery/</loc>
+    <loc>https://flyingzc.github.io/articles/narayana/narayana06-recovery.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/concurrent/concurrent10-sync-vs-lock/</loc>
+    <loc>https://flyingzc.github.io/articles/concurrent/concurrent10-sync-vs-lock.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/narayana/narayana01-init/</loc>
+    <loc>https://flyingzc.github.io/articles/narayana/narayana01-init.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/narayana/narayana02-init-jdbc/</loc>
+    <loc>https://flyingzc.github.io/articles/narayana/narayana02-init-jdbc.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/narayana/narayana04-enlistResource/</loc>
+    <loc>https://flyingzc.github.io/articles/narayana/narayana04-enlistResource.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/narayana/narayana07-rollback/</loc>
+    <loc>https://flyingzc.github.io/articles/narayana/narayana07-rollback.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/transaction/transaction01-ex-scenarios/</loc>
+    <loc>https://flyingzc.github.io/articles/transaction/transaction01-ex-scenarios.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/transaction/transaction02-global-clock/</loc>
+    <loc>https://flyingzc.github.io/articles/transaction/transaction02-global-clock.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/transaction/transaction03-percolator/</loc>
+    <loc>https://flyingzc.github.io/articles/transaction/transaction03-percolator.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/docker/docker03-proxy/</loc>
+    <loc>https://flyingzc.github.io/articles/docker/docker03-proxy.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/hotspot/hotspot01-compile/</loc>
+    <loc>https://flyingzc.github.io/articles/hotspot/hotspot01-compile.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/omid/omid01-build/</loc>
+    <loc>https://flyingzc.github.io/articles/omid/omid01-build.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/springboot/springboot01-build/</loc>
+    <loc>https://flyingzc.github.io/articles/springboot/springboot01-build.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/springboot/springboot02-start/</loc>
+    <loc>https://flyingzc.github.io/articles/springboot/springboot02-start.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/springboot/springboot03-EnableAutoConfiguration/</loc>
+    <loc>https://flyingzc.github.io/articles/springboot/springboot03-EnableAutoConfiguration.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/springboot/springboot04-conditional/</loc>
+    <loc>https://flyingzc.github.io/articles/springboot/springboot04-conditional.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/springboot/springboot05-tomcat/</loc>
+    <loc>https://flyingzc.github.io/articles/springboot/springboot05-tomcat.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tool/ai/ai02-paddle/</loc>
+    <loc>https://flyingzc.github.io/articles/tool/ai/ai02-paddle.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tool/android/android01-adb/</loc>
+    <loc>https://flyingzc.github.io/articles/tool/android/android01-adb.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tool/termux/termux01-usage/</loc>
+    <loc>https://flyingzc.github.io/articles/tool/termux/termux01-usage.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/distributed/distributed01-consistency/</loc>
+    <loc>https://flyingzc.github.io/articles/distributed/distributed01-consistency.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/omid/omid04-client/</loc>
+    <loc>https://flyingzc.github.io/articles/omid/omid03-tso.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/omid/omid03-tso/</loc>
+    <loc>https://flyingzc.github.io/articles/omid/omid02-timestamp-oracle.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/omid/omid02-timestamp-oracle/</loc>
+    <loc>https://flyingzc.github.io/articles/omid/omid04-client.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/shardingsphere/ShardingSphere-Narayana-XA%E4%BA%8B%E5%8A%A1%E4%B8%8D%E5%9B%9E%E6%BB%9A%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D/</loc>
+    <loc>https://flyingzc.github.io/articles/shardingsphere/ShardingSphere-Narayana-XA%E4%BA%8B%E5%8A%A1%E4%B8%8D%E5%9B%9E%E6%BB%9A%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/shardingsphere/ShardingSphere-SQL%E8%A7%A3%E6%9E%90Issue%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B/</loc>
+    <loc>https://flyingzc.github.io/articles/shardingsphere/ShardingSphere-SQL%E8%A7%A3%E6%9E%90Issue%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/shardingsphere/ShardingSphere-XA%E4%BA%8B%E5%8A%A1%E6%97%A0%E6%B3%95%E6%81%A2%E5%A4%8D%E9%97%AE%E9%A2%98/</loc>
+    <loc>https://flyingzc.github.io/articles/shardingsphere/ShardingSphere-XA%E4%BA%8B%E5%8A%A1%E6%97%A0%E6%B3%95%E6%81%A2%E5%A4%8D%E9%97%AE%E9%A2%98.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/shardingsphere/ShardingSphere-inline%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D/</loc>
+    <loc>https://flyingzc.github.io/articles/shardingsphere/ShardingSphere-inline%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tomcat/tomcat02-start/</loc>
+    <loc>https://flyingzc.github.io/articles/tomcat/tomcat03-session.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tomcat/tomcat03-session/</loc>
+    <loc>https://flyingzc.github.io/articles/tomcat/tomcat02-start.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tomcat/tomcat01-lifecycle/</loc>
+    <loc>https://flyingzc.github.io/articles/tomcat/tomcat01-lifecycle.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tomcat/tomcat01_debug/</loc>
+    <loc>https://flyingzc.github.io/articles/tomcat/tomcat01_debug.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tomcat/tomcat04-distribute-session/</loc>
+    <loc>https://flyingzc.github.io/articles/tomcat/tomcat04-distribute-session.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tomcat/tomcat06-request/</loc>
+    <loc>https://flyingzc.github.io/articles/tomcat/tomcat06-request.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk01_build/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk01_build.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk02_start/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk02_start.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk03_vote/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk03_vote.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk07_usage/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk07_usage.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk09-cmd/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk09-cmd.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk04_sync/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk04_sync.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk05_processor/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk05_processor.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk06_snapshot_txnlog/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk06_snapshot_txnlog.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk08_watcher/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk08_watcher.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk20-lock/</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk20-lock.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu01-ssh-timeout-cfg/</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu01-ssh-timeout-cfg.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu02-disable-auto-updates/</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu02-disable-auto-updates.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu04-package/</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu03-crash.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu05-themes/</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu04-package.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu03-crash/</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu05-themes.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/mysql/MySQL%E9%A9%B1%E5%8A%A8add-batch%E4%BC%98%E5%8C%96%E5%AE%9E%E7%8E%B0/</loc>
+    <loc>https://flyingzc.github.io/articles/mysql/MySQL%E9%A9%B1%E5%8A%A8add-batch%E4%BC%98%E5%8C%96%E5%AE%9E%E7%8E%B0.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/otter/otter01-usage/</loc>
+    <loc>https://flyingzc.github.io/articles/otter/otter01-usage.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/struct/BloomFilter/</loc>
+    <loc>https://flyingzc.github.io/articles/struct/BloomFilter.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/spring/spring03-transaction/</loc>
+    <loc>https://flyingzc.github.io/articles/git/git%E9%85%8D%E7%BD%AEshadowsocks.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/spring/spring10-ConfigurationClassParser/</loc>
+    <loc>https://flyingzc.github.io/articles/spring/spring10-ConfigurationClassParser.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/spring/spring11-component-scan/</loc>
+    <loc>https://flyingzc.github.io/articles/spring/spring11-component-scan.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/git/git%E9%85%8D%E7%BD%AEshadowsocks/</loc>
+    <loc>https://flyingzc.github.io/articles/spring/spring03-transaction.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/concurrent/concurrent01-threadpool/</loc>
+    <loc>https://flyingzc.github.io/articles/concurrent/concurrent01-threadpool.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
 </urlset> 
