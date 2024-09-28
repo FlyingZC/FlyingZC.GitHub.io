@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://flyingzc.github.io/articles/h2/h2database06-transaction-commit.html</loc>
+    <lastmod>2024-09-28</lastmod>
+  </url>
+  <url>
     <loc>https://flyingzc.github.io/articles/h2/h2database02-mvstore-init.html</loc>
     <lastmod>2024-09-24</lastmod>
   </url>
@@ -137,11 +141,11 @@
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/omid/omid03-tso.html</loc>
+    <loc>https://flyingzc.github.io/articles/omid/omid02-timestamp-oracle.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/omid/omid02-timestamp-oracle.html</loc>
+    <loc>https://flyingzc.github.io/articles/omid/omid03-tso.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
@@ -165,11 +169,11 @@
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tomcat/tomcat03-session.html</loc>
+    <loc>https://flyingzc.github.io/articles/tomcat/tomcat02-start.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
-    <loc>https://flyingzc.github.io/articles/tomcat/tomcat02-start.html</loc>
+    <loc>https://flyingzc.github.io/articles/tomcat/tomcat03-session.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
@@ -265,15 +269,15 @@
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
+    <loc>https://flyingzc.github.io/articles/spring/spring03-transaction.html</loc>
+    <lastmod>2024-09-23</lastmod>
+  </url>
+  <url>
     <loc>https://flyingzc.github.io/articles/spring/spring10-ConfigurationClassParser.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
     <loc>https://flyingzc.github.io/articles/spring/spring11-component-scan.html</loc>
-    <lastmod>2024-09-23</lastmod>
-  </url>
-  <url>
-    <loc>https://flyingzc.github.io/articles/spring/spring03-transaction.html</loc>
     <lastmod>2024-09-23</lastmod>
   </url>
   <url>
