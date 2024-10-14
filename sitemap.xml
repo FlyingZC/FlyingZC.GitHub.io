@@ -191,7 +191,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/transaction/transaction01-ex-scenarios.html</loc>
+    <loc>https://flyingzc.github.io/articles/transaction/transaction02-global-clock.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -200,7 +200,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/transaction/transaction02-global-clock.html</loc>
+    <loc>https://flyingzc.github.io/articles/transaction/transaction01-ex-scenarios.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -560,7 +560,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu04-package.html</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu05-themes.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -569,7 +569,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu05-themes.html</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu04-package.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -679,7 +679,7 @@
 
   <url>
     <loc>https://flyingzc.github.io/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -687,217 +687,217 @@
   
   <url>
     <loc>https://flyingzc.github.io/tags/Concurrent/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Transaction/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Docker/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Ubuntu-Desktop/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Dubbo/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/git/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/H2/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Database/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Hotspot/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Ubuntu/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Linux/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/MySQL/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Narayana/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Omid/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Otter/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Redis/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/ShardingSphere/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/SQL-Parse/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Spring/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/spring/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/springboot/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/SpringBoot/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Data-Structure/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Tomcat/</loc>
-    <lastmod>2024-10-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://flyingzc.github.io/tags/Percolator/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Zookeeper/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://flyingzc.github.io/tags/Percolator/</loc>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Paddle/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/ADB/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Android/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Tool/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/tags/Termux/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -906,168 +906,168 @@
   
   <url>
     <loc>https://flyingzc.github.io/categories/Concurrent/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Transaction/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Docker/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Dubbo/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/tools/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/H2/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Hotspot/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Ubuntu/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/MySQL/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Narayana/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Omid/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Otter/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Redis/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/ShardingSphere/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Spring/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/spring/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/springboot/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/spring-boot/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Data-Structure/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Tomcat/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Zookeeper/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/AI/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/ADB/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://flyingzc.github.io/categories/Termux/</loc>
-    <lastmod>2024-10-11</lastmod>
+    <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
