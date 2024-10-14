@@ -191,7 +191,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/transaction/transaction02-global-clock.html</loc>
+    <loc>https://flyingzc.github.io/articles/transaction/transaction01-ex-scenarios.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -200,7 +200,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/transaction/transaction01-ex-scenarios.html</loc>
+    <loc>https://flyingzc.github.io/articles/transaction/transaction02-global-clock.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -497,7 +497,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk06_snapshot_txnlog.html</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk05_processor.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -506,7 +506,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/zk/zk05_processor.html</loc>
+    <loc>https://flyingzc.github.io/articles/zk/zk06_snapshot_txnlog.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -560,7 +560,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu05-themes.html</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu04-package.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -569,7 +569,7 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/articles/linux/ubuntu04-package.html</loc>
+    <loc>https://flyingzc.github.io/articles/linux/ubuntu05-themes.html</loc>
     
     <lastmod>2024-09-23</lastmod>
     
@@ -854,14 +854,14 @@
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/tags/Zookeeper/</loc>
+    <loc>https://flyingzc.github.io/tags/Percolator/</loc>
     <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://flyingzc.github.io/tags/Percolator/</loc>
+    <loc>https://flyingzc.github.io/tags/Zookeeper/</loc>
     <lastmod>2024-10-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
