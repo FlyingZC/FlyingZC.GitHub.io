@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>H2 Database 事务 Rollback 流程实现原理 | flyingzc's blog</title><meta name="author" content="flyingzc"><meta name="copyright" content="flyingzc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="H2 Database 事务 Rollback 流程实现原理使用1234567Connection conn &#x3D; getConnection();&#x2F;&#x2F; 开启事务conn.setAutoCommit(false);&#x2F;&#x2F; 执行 SQLexecuteWithLog(conn, &quot;insert into Test(id, name) values(1, &#x27;name1&#x27;), (">
+<meta property="og:type" content="article">
+<meta property="og:title" content="H2 Database 事务 Rollback 流程实现原理">
+<meta property="og:url" content="https://flyingzc.github.io/articles/h2/h2database06-transaction-rollback.html">
+<meta property="og:site_name" content="flyingzc&#39;s blog">
+<meta property="og:description" content="H2 Database 事务 Rollback 流程实现原理使用1234567Connection conn &#x3D; getConnection();&#x2F;&#x2F; 开启事务conn.setAutoCommit(false);&#x2F;&#x2F; 执行 SQLexecuteWithLog(conn, &quot;insert into Test(id, name) values(1, &#x27;name1&#x27;), (">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://flyingzc.github.io/images/zc-icon.jpeg">
+<meta property="article:published_time" content="2024-10-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-10-16T01:08:56.851Z">
+<meta property="article:author" content="flyingzc">
+<meta property="article:tag" content="H2">
+<meta property="article:tag" content="Database">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://flyingzc.github.io/images/zc-icon.jpeg"><link rel="shortcut icon" href="/images/zc-icon.jpeg"><link rel="canonical" href="https://flyingzc.github.io/articles/h2/h2database06-transaction-rollback.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="googleb7ed7c2cc0631efa"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: '',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'H2 Database 事务 Rollback 流程实现原理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-16 09:08:56'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/self/github-dark.css"><meta name="generator" content="Hexo 7.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/images/zc-icon.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">74</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">24</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="flyingzc's blog"><span class="site-name">flyingzc's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">H2 Database 事务 Rollback 流程实现原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-10-15T16:00:00.000Z" title="发表于 2024-10-16 00:00:00">2024-10-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-16T01:08:56.851Z" title="更新于 2024-10-16 09:08:56">2024-10-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/H2/">H2</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="H2 Database 事务 Rollback 流程实现原理"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="H2-Database-事务-Rollback-流程实现原理"><a href="#H2-Database-事务-Rollback-流程实现原理" class="headerlink" title="H2 Database 事务 Rollback 流程实现原理"></a>H2 Database 事务 Rollback 流程实现原理</h1><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Connection</span> <span class="hljs-variable">conn</span> <span class="hljs-operator">=</span> getConnection();<br><span class="hljs-comment">// 开启事务</span><br>conn.setAutoCommit(<span class="hljs-literal">false</span>);<br><span class="hljs-comment">// 执行 SQL</span><br>executeWithLog(conn, <span class="hljs-string">&quot;insert into Test(id, name) values(1, &#x27;name1&#x27;), (2, &#x27;name2&#x27;)&quot;</span>);<br><span class="hljs-comment">// 回滚事务</span><br>conn.rollback();<br></code></pre></td></tr></table></figure>
+
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><h2 id="总体流程"><a href="#总体流程" class="headerlink" title="总体流程"></a>总体流程</h2><p>当执行事务回滚时，会获取当前事务所有的 undoLogId，然后从后向前遍历每一个 undoLogId。<br>对于每一个 undoLogId，先遍历 undoLog btree 找到存储的 Record。Record 信息里包含了当前 undoLogId 操作的数据行信息。<br>然后根据 Record 信息找到对应记录的 primary key btree，根据主键 id 找到对应行记录进行回滚操作。<br>当记录回滚完之后，再回滚 undoLog btree 上的 undoLog 信息。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs km">获取 transaction id 和 当前 undo log id.<br>从当前 undo log id 一直遍历到 0(事务刚开启时 undoLogId=0),回滚当前事务的所有操作.<br>    根据 undo log key 定位到 undo log btree 上的指定位置,获取存储的 record<br>        record 包含当前 undo log 操作的 mvMap(比如 Primary key) 的 mapId, key(比如主键 id), oldValue<br>    再根据 record 打开 primary key mvMap,定位到 row key, 然后决定从 mvMap 上移除当前值<br>    再移除 undo log mvMap 上的当前 undo log key 对应的值<br></code></pre></td></tr></table></figure>
+
+<h2 id="代码流程"><a href="#代码流程" class="headerlink" title="代码流程"></a>代码流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs km">org.h2.jdbc.JdbcStatement#executeInternal<br>    org.h2.jdbc.JdbcConnection#prepareCommand<br>    解析 rollback 语句<br>    org.h2.command.Command#executeUpdate<br>        org.h2.engine.SessionLocal#setSavepoint <br>        设置savepoint,返回新的logId<br>        org.h2.command.dml.TransactionCommand#update<br>            org.h2.engine.SessionLocal#rollback<br>                org.h2.engine.SessionLocal#hasTransaction <br>                判断在事务中<br>                org.h2.engine.SessionLocal#rollbackTo <br>                执行回滚<br>                    org.h2.mvstore.tx.Transaction#rollback <br>                    回滚<br>                        org.h2.mvstore.tx.Transaction#setStatus <br>                        1.尝试设置事务状态为 ROLLED_BACK，并获取之前的事务状态<br>                            获取事务当前的 state &amp; logId<br>                            org.h2.mvstore.tx.Transaction#getLogId <br>                            获取当前 undo log id<br>                            org.h2.mvstore.tx.Transaction#getStatus <br>                            获取事务当前状态<br>                            2.判断当前状态允许变更为目标状态,然后变更为目标状态<br>                            org.h2.mvstore.tx.Transaction#composeState 新状态(transaction status + undo log id)<br>                            3.原子变更 statusAndLogId<br>                        获取当前 status 和 logId<br>                        org.h2.mvstore.tx.TransactionStore#rollbackTo <br>                        回滚<br>                            org.h2.mvstore.tx.Transaction#getId<br>                            org.h2.mvstore.tx.RollbackDecisionMaker#init0 <br>                            创建 rollback decision maker<br>                            3.遍历从 maxLogId 到 toLogId,依次进行回滚操作<br>                            org.h2.mvstore.tx.TransactionStore#getOperationId <br>                            3.1.计算 undo log key (transaction id + log id)<br>                            org.h2.mvstore.MVMap#operate <br>                            3.2.根据 undo log key 操作 undo log mvMap, 执行回滚操作<br>                                org.h2.mvstore.MVMap#flushAndGetRoot <br>                                获取 undo log mvMap 根节点<br>                                org.h2.mvstore.CursorPos#traverseDown <br>                                找到 undoLog 位置<br>                                org.h2.mvstore.MVMap.DecisionMaker#decide <br>                                内部会先回滚该undoLog对应的mvMap上对应row<br>                                    org.h2.mvstore.tx.RollbackDecisionMaker#decide<br>                                        1.获取 undo log record <br>                                        里当前存储的旧值<br>                                        org.h2.mvstore.tx.TransactionStore#openMap <br>                                        3.获取数据行对应 mvMap(比如 primary key mvMap)<br>                                        org.h2.mvstore.MVMap#operate <br>                                        回滚数据行<br>                                            org.h2.mvstore.MVMap#flushAndGetRoot <br>                                            获取表根节点<br>                                            org.h2.mvstore.CursorPos#traverseDown <br>                                            找到数据行<br>                                            org.h2.mvstore.Page.Leaf#remove <br>                                            移除数据行<br>                                org.h2.mvstore.Page.Leaf#remove <br>                                移除 undo log 叶子节点<br>                        org.h2.mvstore.tx.TransactionStore#endTransaction<br>                                org.h2.mvstore.tx.Transaction#setStatus<br>                                修改状态<br>                org.h2.engine.SessionLocal#endTransaction<br>                    org.h2.engine.SessionLocal#unlockAll<br>                    释放锁<br></code></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io">flyingzc</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io/articles/h2/h2database06-transaction-rollback.html">https://flyingzc.github.io/articles/h2/h2database06-transaction-rollback.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://flyingzc.github.io" target="_blank">flyingzc's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/H2/">H2</a><a class="post-meta__tags" href="/tags/Database/">Database</a></div><div class="post_share"><div class="social-share" data-image="/images/zc-icon.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/articles/h2/h2database03-mvstore-commit.html" title="H2 Database MVStore Commit 流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">H2 Database MVStore Commit 流程</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/articles/h2/h2database01-build.html" title="H2 Database IDEA 环境搭建"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-20</div><div class="title">H2 Database IDEA 环境搭建</div></div></a></div><div><a href="/articles/h2/h2database02-mvstore-init.html" title="H2 Database MVStore 初始化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-20</div><div class="title">H2 Database MVStore 初始化</div></div></a></div><div><a href="/articles/h2/h2database03-mvstore-commit.html" title="H2 Database MVStore Commit 流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-15</div><div class="title">H2 Database MVStore Commit 流程</div></div></a></div><div><a href="/articles/h2/h2database05-page.html" title="H2 Database MvMap 插入数据流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-12</div><div class="title">H2 Database MvMap 插入数据流程</div></div></a></div><div><a href="/articles/h2/h2database06-transaction-commit.html" title="H2 Database 事务 Commit 流程实现原理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-28</div><div class="title">H2 Database 事务 Commit 流程实现原理</div></div></a></div><div><a href="/articles/h2/h2database08-insert.html" title="H2 Database SQL 插入流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-03</div><div class="title">H2 Database SQL 插入流程</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/images/zc-icon.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">flyingzc</div><div class="author-info__description">不积跬步无以至千里<br/>不积小流无以成江海</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">74</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">24</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FlyingZC"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FlyingZC" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">FlyingZC's Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#H2-Database-%E4%BA%8B%E5%8A%A1-Rollback-%E6%B5%81%E7%A8%8B%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">H2 Database 事务 Rollback 流程实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD"><span class="toc-number">1.2.</span> <span class="toc-text">功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97"><span class="toc-number">1.3.</span> <span class="toc-text">模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB"><span class="toc-number">1.4.</span> <span class="toc-text">类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">1.5.</span> <span class="toc-text">总体流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%B5%81%E7%A8%8B"><span class="toc-number">1.6.</span> <span class="toc-text">代码流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">1.7.</span> <span class="toc-text">参考</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/h2/h2database06-transaction-rollback.html" title="H2 Database 事务 Rollback 流程实现原理">H2 Database 事务 Rollback 流程实现原理</a><time datetime="2024-10-15T16:00:00.000Z" title="发表于 2024-10-16 00:00:00">2024-10-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/h2/h2database03-mvstore-commit.html" title="H2 Database MVStore Commit 流程">H2 Database MVStore Commit 流程</a><time datetime="2024-10-14T16:00:00.000Z" title="发表于 2024-10-15 00:00:00">2024-10-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/h2/h2database05-page.html" title="H2 Database MvMap 插入数据流程">H2 Database MvMap 插入数据流程</a><time datetime="2024-10-11T16:00:00.000Z" title="发表于 2024-10-12 00:00:00">2024-10-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/h2/h2database06-transaction-commit.html" title="H2 Database 事务 Commit 流程实现原理">H2 Database 事务 Commit 流程实现原理</a><time datetime="2024-09-27T16:00:00.000Z" title="发表于 2024-09-28 00:00:00">2024-09-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/h2/h2database08-insert.html" title="H2 Database SQL 插入流程">H2 Database SQL 插入流程</a><time datetime="2024-09-02T16:00:00.000Z" title="发表于 2024-09-03 00:00:00">2024-09-03</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By flyingzc</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
