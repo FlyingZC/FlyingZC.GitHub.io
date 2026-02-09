@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>LinkedIn Coral SQL 翻译实现原理 | flyingzc's blog</title><meta name="author" content="flyingzc"><meta name="copyright" content="flyingzc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="LinkedIn Coral SQL 翻译实现原理总体流程以 Hive SQL 翻译成 Trino SQL 为例: 1234567Hive SQL -&gt; Calcite RelNode    解析成抽象语法树 AST(比如通过 hive 的 antlr 语法解析)     遍历节点转换为 SqlNode     SqlNode 转换为 Calcite RelNode(Coral IR)Cal">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LinkedIn Coral SQL 翻译实现原理">
+<meta property="og:url" content="https://flyingzc.github.io/articles/coral/coral02-translate.html">
+<meta property="og:site_name" content="flyingzc&#39;s blog">
+<meta property="og:description" content="LinkedIn Coral SQL 翻译实现原理总体流程以 Hive SQL 翻译成 Trino SQL 为例: 1234567Hive SQL -&gt; Calcite RelNode    解析成抽象语法树 AST(比如通过 hive 的 antlr 语法解析)     遍历节点转换为 SqlNode     SqlNode 转换为 Calcite RelNode(Coral IR)Cal">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://flyingzc.github.io/images/zc-icon.jpeg">
+<meta property="article:published_time" content="2025-04-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-07-11T10:59:44.461Z">
+<meta property="article:author" content="flyingzc">
+<meta property="article:tag" content="Coral">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://flyingzc.github.io/images/zc-icon.jpeg"><link rel="shortcut icon" href="/images/zc-icon.jpeg"><link rel="canonical" href="https://flyingzc.github.io/articles/coral/coral02-translate.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="DentpX3LnP_WNgEeFnNIcTZZky-Bby-zL-uI_9GqTAw"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: '',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'LinkedIn Coral SQL 翻译实现原理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-07-11 18:59:44'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/self/github-dark.css"><meta name="generator" content="Hexo 7.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/images/zc-icon.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">86</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="flyingzc's blog"><span class="site-name">flyingzc's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">LinkedIn Coral SQL 翻译实现原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-08T16:00:00.000Z" title="发表于 2025-04-09 00:00:00">2025-04-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-11T10:59:44.461Z" title="更新于 2025-07-11 18:59:44">2025-07-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Coral/">Coral</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="LinkedIn Coral SQL 翻译实现原理"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="LinkedIn-Coral-SQL-翻译实现原理"><a href="#LinkedIn-Coral-SQL-翻译实现原理" class="headerlink" title="LinkedIn Coral SQL 翻译实现原理"></a>LinkedIn Coral SQL 翻译实现原理</h1><h2 id="总体流程"><a href="#总体流程" class="headerlink" title="总体流程"></a>总体流程</h2><p>以 Hive SQL 翻译成 Trino SQL 为例:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs km">Hive SQL -&gt; Calcite RelNode<br>    解析成抽象语法树 AST(比如通过 hive 的 antlr 语法解析) <br>    遍历节点转换为 SqlNode <br>    SqlNode 转换为 Calcite RelNode(Coral IR)<br>Calcite RelNode -&gt; Trino SQL<br>    RelNode -&gt; SqlNode<br>    SqlNode -&gt; TrinoSQL<br></code></pre></td></tr></table></figure>
+
+<h2 id="详细流程"><a href="#详细流程" class="headerlink" title="详细流程"></a>详细流程</h2><div class="markmap-wrap" 
+      
+      
+    >
+      <script type="application/json">{"content":"","children":[{"content":"1.Hive SQL -&gt; Calcite RelNode","children":[{"content":"&#x521b;&#x5efa; HiveToRelConverter","children":[{"content":"1.&#x7236;&#x7c7b; ToRelConverter &#x6784;&#x9020;&#x65b9;&#x6cd5;","children":[{"content":"&#x521b;&#x5efa; SchemaPlus","children":[],"payload":{"tag":"li","lines":"3,4"}},{"content":"&#x521b;&#x5efa; FrameworkConfig","children":[],"payload":{"tag":"li","lines":"4,5"}},{"content":"&#x521b;&#x5efa; SqlRexConvertletTable","children":[],"payload":{"tag":"li","lines":"5,6"}}],"payload":{"tag":"li","lines":"2,6"}},{"content":"2.&#x6784;&#x9020;&#x65b9;&#x6cd5;","children":[{"content":"&#x521b;&#x5efa; StaticHiveFunctionRegistry","children":[],"payload":{"tag":"li","lines":"7,8"}},{"content":"&#x521b;&#x5efa; HiveFunctionResolver","children":[],"payload":{"tag":"li","lines":"8,9"}},{"content":"&#x521b;&#x5efa; HiveSqlValidator","children":[],"payload":{"tag":"li","lines":"9,10"}},{"content":"&#x521b;&#x5efa; ParseTreeBuilder","children":[],"payload":{"tag":"li","lines":"10,11"}}],"payload":{"tag":"li","lines":"6,11"}}],"payload":{"tag":"li","lines":"1,11"}},{"content":"1.Hive SQL&#x65b9;&#x8a00;&#x8bed;&#x6cd5;&#x89e3;&#x6790; -&gt; &#x62bd;&#x8c61;&#x8bed;&#x6cd5;&#x6811;","children":[{"content":"parseTreeBuilder.process","children":[{"content":"CoralParseDriver#parse","children":[{"content":"&#x8fdb;&#x884c;sql&#x89e3;&#x6790;,&#x8fd4;&#x56de; hive ASTNode root &#x7ed3;&#x6784;","children":[],"payload":{"tag":"li","lines":"14,15"}}],"payload":{"tag":"li","lines":"13,15"}},{"content":"processAST","children":[{"content":"visit &#x8bbf;&#x95ee;&#x8bed;&#x6cd5;&#x6811;","children":[],"payload":{"tag":"li","lines":"16,17"}}],"payload":{"tag":"li","lines":"15,17"}}],"payload":{"tag":"li","lines":"12,17"}}],"payload":{"tag":"li","lines":"11,17"}},{"content":"2.&#x904d;&#x5386; ASTNode visit &#x8bbf;&#x95ee;&#x8f6c;&#x6362;&#x4e3a; calcite SqlNode &#x7ed3;&#x6784;","children":[{"content":"1.&#x901a;&#x8fc7; visit &#x5c06; ast &#x8f6c;&#x6362;&#x4e3a; hive sqlNode","children":[{"content":"ParseTreeBuilder#processAST","children":[{"content":"ParseTreeBuilder#visitQueryNode &#x8bbf;&#x95ee;&#x521b;&#x5efa; calcite SqlSelect &#x5bf9;&#x8c61;","children":[{"content":"visitSelect","children":[],"payload":{"tag":"li","lines":"21,22"}},{"content":"visitFunction &#x51fd;&#x6570;&#x5904;&#x7406;","children":[{"content":"visitFunctionInternal","children":[{"content":"HiveFunctionResolver#tryResolve &#x5904;&#x7406;&#x51fd;&#x6570;&#x540d;","children":[{"content":"&#x901a;&#x8fc7; StaticHiveFunctionRegistry &#x67e5;&#x627e;&#x5bf9;&#x5e94;&#x7684;&#x51fd;&#x6570;","children":[],"payload":{"tag":"li","lines":"25,26"}}],"payload":{"tag":"li","lines":"24,26"}}],"payload":{"tag":"li","lines":"23,26"}}],"payload":{"tag":"li","lines":"22,26"}}],"payload":{"tag":"li","lines":"20,26"}}],"payload":{"tag":"li","lines":"19,26"}}],"payload":{"tag":"li","lines":"18,26"}},{"content":"2.hive sqlNode -&gt; Coral Sql Node","children":[{"content":"sqlNode accept HiveSqlNodeToCoralSqlNodeConverter visit","children":[{"content":"&#x8fd9;&#x91cc;&#x5c31;&#x4e00;&#x4e2a; ShiftArrayIndexTransformer &#x8f6c;&#x6362;","children":[{"content":"&#x5c06; hive &#x7684;&#x6570;&#x7ec4;&#x4e0b;&#x6807;&#x8fdb;&#x884c;&#x8c03;&#x6574;","children":[],"payload":{"tag":"li","lines":"29,30"}}],"payload":{"tag":"li","lines":"28,30"}}],"payload":{"tag":"li","lines":"27,30"}}],"payload":{"tag":"li","lines":"26,30"}}],"payload":{"tag":"li","lines":"17,30"}},{"content":"3.&#x8f6c;&#x5316; SqlNode &#x5230; RelNode","children":[{"content":"ToRelConverter.toRel","children":[{"content":"1.&#x521b;&#x5efa; sqlNode -&gt; rel&#x8f6c;&#x6362;&#x5668;","children":[{"content":"org.apache.calcite.sql2rel.SqlToRelConverter","children":[],"payload":{"tag":"li","lines":"33,34"}}],"payload":{"tag":"li","lines":"32,34"}},{"content":"2.&#x6267;&#x884c; sqlNode -&gt; RelNode &#x8f6c;&#x6362;","children":[{"content":"validator#validate","children":[],"payload":{"tag":"li","lines":"35,36"}},{"content":"HiveSqlToRelConverter#convertQuery &#x4e3b;&#x8981;&#x901a;&#x8fc7;&#x4e0b;&#x9762;calcite&#x91cc;&#x7684;&#x65b9;&#x6cd5;&#x8fdb;&#x884c;&#x8f6c;&#x6362;,&#x91cd;&#x5199;&#x4e86;&#x90e8;&#x5206;&#x65b9;&#x6cd5;","children":[{"content":"SqlToRelConverter#convertQueryRecursive","children":[],"payload":{"tag":"li","lines":"37,38"}}],"payload":{"tag":"li","lines":"36,38"}}],"payload":{"tag":"li","lines":"34,38"}}],"payload":{"tag":"li","lines":"31,38"}}],"payload":{"tag":"li","lines":"30,38"}}],"payload":{"tag":"li","lines":"0,38"}},{"content":"2.Calcite RelNode -&gt; trino SQL","children":[{"content":"4.RelNode -&gt; Trino SqlNode","children":[{"content":"&#x5c06;&#x5173;&#x7cfb;&#x4ee3;&#x6570; &#x8f6c;&#x6362;&#x6210; Trino &#x7684; SqlNode &#x8bed;&#x6cd5;&#x6811;","children":[],"payload":{"tag":"li","lines":"40,41"}},{"content":"1.&#x521b;&#x5efa; relNode -&gt; sqlNode &#x8f6c;&#x6362;&#x5668;","children":[{"content":"org.apache.calcite.rel.rel2sql.RelToSqlConverter","children":[],"payload":{"tag":"li","lines":"42,43"}}],"payload":{"tag":"li","lines":"41,43"}},{"content":"2.&#x6267;&#x884c; relNode -&gt; sqlNode &#x8f6c;&#x6362;","children":[{"content":"RelToTrinoConverter#convert","children":[{"content":"1.convertToSqlNode","children":[{"content":"&#x5c06; relNode &#x8f6c;&#x6362;&#x6210; trino sqlNode","children":[],"payload":{"tag":"li","lines":"46,47"}}],"payload":{"tag":"li","lines":"45,47"}},{"content":"2.DataTypeDerivedSqlCallConverter visit","children":[{"content":"&#x5904;&#x7406;&#x6570;&#x636e;&#x7c7b;&#x578b;&#x7684;&#x8f6c;&#x6362;","children":[{"content":"&#x91cc;&#x9762;&#x5b9a;&#x4e49;&#x5f88;&#x591a; SqlCallTransformer &#x51fd;&#x6570;&#x8f6c;&#x6362;","children":[],"payload":{"tag":"li","lines":"49,50"}}],"payload":{"tag":"li","lines":"48,50"}}],"payload":{"tag":"li","lines":"47,50"}},{"content":"3.CoralToTrinoSqlCallConverter visit &#x51fd;&#x6570;&#x8f6c;&#x6362;","children":[{"content":"&#x6784;&#x9020;&#x65b9;&#x6cd5;&#x91cc;&#x521b;&#x5efa;&#x4e86;&#x5f88;&#x591a; SqlCallTransformers","children":[{"content":"&#x6bd4;&#x5982; CoralRegistryOperatorRenameSqlCallTransformer(&quot;nvl&quot;, 2, &quot;coalesce&quot;)","children":[{"content":"&#x5c06; nvl &#x51fd;&#x6570;&#x8f6c;&#x6362;&#x6210; coalesce &#x51fd;&#x6570;","children":[],"payload":{"tag":"li","lines":"53,54"}}],"payload":{"tag":"li","lines":"52,54"}}],"payload":{"tag":"li","lines":"51,54"}},{"content":"SqlCallTransformer#apply","children":[{"content":"condition","children":[{"content":"&#x5224;&#x65ad;&#x662f;&#x5426;&#x6ee1;&#x8db3;&#x6761;&#x4ef6;","children":[],"payload":{"tag":"li","lines":"56,57"}}],"payload":{"tag":"li","lines":"55,57"}},{"content":"transform","children":[{"content":"&#x8fdb;&#x884c;sql&#x7ffb;&#x8bd1;","children":[{"content":"OperatorRenameSqlCallTransformer","children":[],"payload":{"tag":"li","lines":"59,60"}}],"payload":{"tag":"li","lines":"58,60"}}],"payload":{"tag":"li","lines":"57,60"}}],"payload":{"tag":"li","lines":"54,60"}}],"payload":{"tag":"li","lines":"50,60"}}],"payload":{"tag":"li","lines":"44,60"}}],"payload":{"tag":"li","lines":"43,60"}}],"payload":{"tag":"li","lines":"39,60"}},{"content":"5.SqlNode -&gt; trinoSQL","children":[{"content":"TrinoSqlRewriter#toSqlString","children":[{"content":"&#x901a;&#x8fc7; sqlNode &#x5199;&#x51fa;&#x7ffb;&#x8bd1;&#x540e;&#x7684; sql","children":[],"payload":{"tag":"li","lines":"62,63"}}],"payload":{"tag":"li","lines":"61,63"}}],"payload":{"tag":"li","lines":"60,63"}}],"payload":{"tag":"li","lines":"38,63"}}],"payload":{"tag":"ul","lines":"0,63"}}</script>
+      <script type="application/json">{}</script>
+    </div>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://github.com/linkedin/coral">coral github</a></p>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/markmap-toolbar@0.18.10/dist/style.css"><script src="https://fastly.jsdelivr.net/npm/d3@7"></script><script src="https://fastly.jsdelivr.net/npm/markmap-view@0.18.10"></script><script src="https://fastly.jsdelivr.net/npm/markmap-toolbar@0.18.10"></script>
+<link rel="stylesheet" href="/css/markmap.css">
+
+<script src="/js/markmap.js"></script>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io">flyingzc</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io/articles/coral/coral02-translate.html">https://flyingzc.github.io/articles/coral/coral02-translate.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://flyingzc.github.io" target="_blank">flyingzc's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Coral/">Coral</a></div><div class="post_share"><div class="social-share" data-image="/images/zc-icon.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/images/wechat.jpeg" target="_blank"><img class="post-qr-code-img" src="/images/wechat.jpeg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/articles/maven/maven-shade-calcite-jar.html" title="Maven Shade 插件替换 Calcite Jar 包 class 文件"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Maven Shade 插件替换 Calcite Jar 包 class 文件</div></div></a></div><div class="next-post pull-right"><a href="/articles/coral/coral01-build.html" title="LinkedIn Coral 编译&amp;SQL翻译使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">LinkedIn Coral 编译&amp;SQL翻译使用</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/articles/coral/coral01-build.html" title="LinkedIn Coral 编译&amp;SQL翻译使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-07</div><div class="title">LinkedIn Coral 编译&amp;SQL翻译使用</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/images/zc-icon.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">flyingzc</div><div class="author-info__description">不积跬步无以至千里<br/>不积小流无以成江海</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">86</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FlyingZC"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FlyingZC" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">FlyingZC's Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#LinkedIn-Coral-SQL-%E7%BF%BB%E8%AF%91%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">LinkedIn Coral SQL 翻译实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">1.1.</span> <span class="toc-text">总体流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%A6%E7%BB%86%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">详细流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">1.3.</span> <span class="toc-text">参考</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/shardingsphere/ShardingSphere%E5%BC%80%E5%90%AF%E9%A2%84%E7%BC%96%E8%AF%91%E5%8F%82%E6%95%B0insert%E6%85%A2%E5%AE%9A%E4%BD%8D.html" title="ShardingSphere开启预编译参数insert慢定位">ShardingSphere开启预编译参数insert慢定位</a><time datetime="2026-02-08T16:00:00.000Z" title="发表于 2026-02-09 00:00:00">2026-02-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/hikaricp/hiaricp01-init.html" title="HikariCP 连接池创建流程">HikariCP 连接池创建流程</a><time datetime="2025-12-21T16:00:00.000Z" title="发表于 2025-12-22 00:00:00">2025-12-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/ignite/ignite03-transaction-begin.html" title="Apache Ignite 开启事务执行流程">Apache Ignite 开启事务执行流程</a><time datetime="2025-10-10T16:00:00.000Z" title="发表于 2025-10-11 00:00:00">2025-10-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/ignite/ignite02-transaction.html" title="Apache Ignite 分布式事务原理">Apache Ignite 分布式事务原理</a><time datetime="2025-09-17T16:00:00.000Z" title="发表于 2025-09-18 00:00:00">2025-09-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/ignite/ignite01-build.html" title="Apache Ignite IDEA 环境搭建">Apache Ignite IDEA 环境搭建</a><time datetime="2025-09-10T16:00:00.000Z" title="发表于 2025-09-11 00:00:00">2025-09-11</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By flyingzc</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

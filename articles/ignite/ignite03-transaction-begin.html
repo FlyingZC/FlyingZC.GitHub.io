@@ -1,0 +1,292 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Apache Ignite 开启事务执行流程 | flyingzc's blog</title><meta name="author" content="flyingzc"><meta name="copyright" content="flyingzc"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Apache Ignite 开启事务执行流程作用总体流程12345678910获取 Ignite 实例获取 Ignite Transaction 对象    加读写锁以确保当前线程只有一个事务开启事务    初始化近程事务 GridNearTxLocal    初始化事务状态，设置事务版本、拓扑信息、映射等        获取版本管理器        获取拓扑版本        生成下一个版本号返">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Ignite 开启事务执行流程">
+<meta property="og:url" content="https://flyingzc.github.io/articles/ignite/ignite03-transaction-begin.html">
+<meta property="og:site_name" content="flyingzc&#39;s blog">
+<meta property="og:description" content="Apache Ignite 开启事务执行流程作用总体流程12345678910获取 Ignite 实例获取 Ignite Transaction 对象    加读写锁以确保当前线程只有一个事务开启事务    初始化近程事务 GridNearTxLocal    初始化事务状态，设置事务版本、拓扑信息、映射等        获取版本管理器        获取拓扑版本        生成下一个版本号返">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://flyingzc.github.io/images/zc-icon.jpeg">
+<meta property="article:published_time" content="2025-10-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-10-21T02:30:23.231Z">
+<meta property="article:author" content="flyingzc">
+<meta property="article:tag" content="Transaction">
+<meta property="article:tag" content="Ignite">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://flyingzc.github.io/images/zc-icon.jpeg"><link rel="shortcut icon" href="/images/zc-icon.jpeg"><link rel="canonical" href="https://flyingzc.github.io/articles/ignite/ignite03-transaction-begin.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="google-site-verification" content="DentpX3LnP_WNgEeFnNIcTZZky-Bby-zL-uI_9GqTAw"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: '',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Apache Ignite 开启事务执行流程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-10-21 10:30:23'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/self/github-dark.css"><meta name="generator" content="Hexo 7.0.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/images/zc-icon.jpeg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">86</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="flyingzc's blog"><span class="site-name">flyingzc's blog</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Apache Ignite 开启事务执行流程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-10-10T16:00:00.000Z" title="发表于 2025-10-11 00:00:00">2025-10-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-10-21T02:30:23.231Z" title="更新于 2025-10-21 10:30:23">2025-10-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Ignite/">Ignite</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Apache Ignite 开启事务执行流程"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Apache-Ignite-开启事务执行流程"><a href="#Apache-Ignite-开启事务执行流程" class="headerlink" title="Apache Ignite 开启事务执行流程"></a>Apache Ignite 开启事务执行流程</h1><h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><h2 id="总体流程"><a href="#总体流程" class="headerlink" title="总体流程"></a>总体流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs km">获取 Ignite 实例<br>获取 Ignite Transaction 对象<br>    加读写锁以确保当前线程只有一个事务<br>开启事务<br>    初始化近程事务 GridNearTxLocal<br>    初始化事务状态，设置事务版本、拓扑信息、映射等<br>        获取版本管理器<br>        获取拓扑版本<br>        生成下一个版本号<br>返回事务代理供用户操作<br></code></pre></td></tr></table></figure>
+
+<h2 id="详细流程"><a href="#详细流程" class="headerlink" title="详细流程"></a>详细流程</h2><h3 id="获取ignite实例"><a href="#获取ignite实例" class="headerlink" title="获取ignite实例"></a>获取ignite实例</h3><p>这一步获取 Ignite 集群的入口点实例，用于后续操作。Ignition 类是静态工厂方法，内部通过 IgnitionEx 获取实际的网格实例，并根据安全配置决定是否包装为代理对象。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs km">org.apache.ignite.Ignition#ignite 获取ignite实例<br>    org.apache.ignite.internal.IgnitionEx#grid 获取网格实例<br>        org.apache.ignite.internal.IgnitionEx#grid 获取网格实例<br>            org.apache.ignite.internal.IgnitionEx.IgniteNamedInstance#grid 获取命名网格实例<br>    org.apache.ignite.Ignition#wrapToProxyIfNeeded 如需要则包装为代理<br>        org.apache.ignite.internal.processors.security.SecurityUtils#isInsideSandbox 检查是否在沙箱内<br>            org.apache.ignite.internal.processors.security.IgniteSecurityProcessor#hasSandboxedNodes 检查是否有沙箱节点<br></code></pre></td></tr></table></figure>
+
+<h3 id="获取Ignite-Transaction-对象"><a href="#获取Ignite-Transaction-对象" class="headerlink" title="获取Ignite Transaction 对象"></a>获取Ignite Transaction 对象</h3><p>这一步通过内核上下文获取事务管理器。首先检查集群状态确保集群处于活动状态，然后获取缓存处理器中的事务管理器。使用读锁保护线程安全，防止并发访问导致的问题。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs km">org.apache.ignite.internal.IgniteKernal#transactions 获取 Ignite Transaction 对象<br>    org.apache.ignite.internal.IgniteKernal#guard 加读锁保护线程安全<br>        org.apache.ignite.internal.GridKernalContextImpl#gateway 获取网关<br>        org.apache.ignite.internal.GridKernalGatewayImpl#readLock 加读锁,断言状态是started<br>            org.apache.ignite.internal.util.StripedCompositeReadWriteLock#readLock 读写锁<br>                org.apache.ignite.internal.util.StripedCompositeReadWriteLock#curIdx 获取当前索引<br>    org.apache.ignite.internal.IgniteKernal#checkClusterState 校验集群状态<br>        org.apache.ignite.internal.GridKernalContextImpl#state 获取状态<br>        org.apache.ignite.internal.processors.cluster.GridClusterStateProcessor#publicApiActiveState 公共API活动状态<br>            org.apache.ignite.internal.processors.cluster.GridClusterStateProcessor#publicApiActiveStateAsync 异步获取公共API活动状态<br>                org.apache.ignite.internal.processors.cluster.GridClusterStateProcessor#publicApiStateAsync 异步获取公共API状态<br>                    org.apache.ignite.internal.processors.cluster.DiscoveryDataClusterState#transition 状态转换<br>                    org.apache.ignite.internal.processors.cluster.DiscoveryDataClusterState#state 获取状态<br>                    org.apache.ignite.internal.util.future.IgniteFinishedFutureImpl#init0 初始化完成的Future<br>                        org.apache.ignite.internal.util.future.GridFinishedFuture#init0 初始化完成的Future<br>                        org.apache.ignite.internal.util.future.IgniteFutureImpl#init0 初始化Future<br>                            org.apache.ignite.internal.util.future.IgniteFutureImpl#init0 初始化Future<br>                org.apache.ignite.internal.util.future.IgniteFutureImpl#chain 链式操作Future<br>                    org.apache.ignite.internal.util.future.IgniteFutureImpl#chainInternal 内部链式操作Future<br>                        org.apache.ignite.internal.util.future.GridFinishedFuture#chain 链式操作完成的Future<br>                            org.apache.ignite.internal.util.future.IgniteFutureImpl#get 获取Future结果<br>                                org.apache.ignite.internal.util.future.GridFinishedFuture#get 获取完成Future的结果<br>                            org.apache.ignite.cluster.ClusterState#active 集群是否活动<br>                            org.apache.ignite.internal.util.future.GridFinishedFuture#init0 初始化完成的Future<br>                    org.apache.ignite.internal.util.future.IgniteFutureImpl#init0 初始化Future<br>            org.apache.ignite.internal.util.future.IgniteFutureImpl#get 获取Future结果<br>                org.apache.ignite.internal.util.future.GridFinishedFuture#get 获取完成Future的结果<br>    org.apache.ignite.internal.GridKernalContextImpl#cache 获取缓存处理器<br>    org.apache.ignite.internal.processors.cache.GridCacheProcessor#transactions 获取事务管理器<br>    org.apache.ignite.internal.IgniteKernal#unguard 解除保护模式<br>        org.apache.ignite.internal.GridKernalContextImpl#gateway 获取网关<br>        org.apache.ignite.internal.GridKernalGatewayImpl#readUnlock 解读锁<br>            org.apache.ignite.internal.util.StripedCompositeReadWriteLock#readLock 读写锁<br>                org.apache.ignite.internal.util.StripedCompositeReadWriteLock#curIdx 获取当前索引<br></code></pre></td></tr></table></figure>
+
+<h3 id="开启事务"><a href="#开启事务" class="headerlink" title="开启事务"></a>开启事务</h3><p>这一步是事务开启的核心过程。首先检查当前线程是否已有事务（Ignite 不支持嵌套事务），然后创建新的 <code>GridNearTxLocal</code> 事务对象。事务初始化包括生成唯一版本号、设置拓扑信息、初始化状态和映射等。最后返回事务代理对象供用户使用，整个过程通过读锁保证线程安全，并支持分布式追踪。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><code class="hljs km">org.apache.ignite.internal.processors.cache.transactions.IgniteTransactionsImpl#txStart 开启事务<br>    org.apache.ignite.internal.processors.cache.GridCacheSharedContext#kernalContext 获取内核上下文<br>    org.apache.ignite.internal.GridKernalContextImpl#config 获取配置<br>    org.apache.ignite.internal.processors.cache.GridCacheUtils#transactionConfiguration 获取事务配置<br>        org.apache.ignite.configuration.IgniteConfiguration#getTransactionConfiguration 获取事务配置<br>    org.apache.ignite.configuration.TransactionConfiguration#getDefaultTxTimeout 获取默认事务超时时间<br>    org.apache.ignite.internal.processors.cache.transactions.IgniteTransactionsImpl#txStart0 开启事务,返回事务代理对象<br>        org.apache.ignite.internal.processors.cache.GridCacheSharedContext#kernalContext 获取内核上下文<br>        org.apache.ignite.internal.GridKernalContextImpl#gateway 获取网关<br>        org.apache.ignite.internal.GridKernalGatewayImpl#readLock  加读锁,保证线程安全<br>            org.apache.ignite.internal.util.StripedCompositeReadWriteLock#readLock 读写锁<br>                org.apache.ignite.internal.util.StripedCompositeReadWriteLock#curIdx 获取当前索引<br>        org.apache.ignite.internal.GridKernalContextImpl#tracing 获取追踪管理器<br>        org.apache.ignite.internal.managers.tracing.GridTracingManager#create 创建追踪<br>        org.apache.ignite.internal.processors.tracing.MTC#supportInitial 支持初始追踪<br>        org.apache.ignite.internal.processors.tracing.NoopSpan#addTag 添加标签<br>        org.apache.ignite.internal.processors.cache.GridCacheSharedContext#tm 获取事务管理器<br>        org.apache.ignite.internal.processors.cache.transactions.IgniteTxManager#userTx 检查当前线程是否存在事务<br>            org.apache.ignite.internal.processors.cache.transactions.IgniteTxManager#tx  根据当前线程查找事务<br>            org.apache.ignite.internal.processors.cache.transactions.IgniteTxManager#activeUserTx  检查当前线程是否存在事务<br>        org.apache.ignite.internal.processors.cache.transactions.IgniteTxManager#newTx 创建新事务<br>            org.apache.ignite.internal.processors.cache.GridCacheSharedContext#kernalContext 获取内核上下文<br>            org.apache.ignite.internal.GridKernalContextImpl#job 获取作业处理器<br>            org.apache.ignite.internal.processors.job.GridJobProcessor#currentTaskNameHash 获取当前任务名哈希值<br>                org.apache.ignite.internal.processors.job.GridJobProcessor#currentTaskName 获取当前任务名<br>                    org.apache.ignite.internal.GridKernalContextImpl#security 获取安全处理器<br>                    org.apache.ignite.internal.processors.security.NoOpIgniteSecurityProcessor#enabled 安全是否启用<br>            org.apache.ignite.internal.processors.security.SecurityUtils#securitySubjectId 获取安全主体ID<br>                org.apache.ignite.internal.processors.cache.GridCacheSharedContext#kernalContext 获取内核上下文<br>                org.apache.ignite.internal.processors.security.SecurityUtils#securitySubjectId 获取安全主体ID<br>                    org.apache.ignite.internal.GridKernalContextImpl#security 获取安全处理器<br>                    org.apache.ignite.internal.processors.security.NoOpIgniteSecurityProcessor#enabled 安全是否启用<br>            org.apache.ignite.internal.processors.cache.distributed.near.GridNearTxLocal#init0 初始化近程事务<br>                org.apache.ignite.internal.processors.cache.GridCacheSharedContext#versions 获取版本管理器<br>                org.apache.ignite.internal.processors.cache.GridCacheSharedContext#kernalContext 获取内核上下文<br>                org.apache.ignite.internal.GridKernalContextImpl#discovery 获取发现管理器<br>                org.apache.ignite.internal.managers.discovery.GridDiscoveryManager#topologyVersion 获取拓扑版本<br>                    org.apache.ignite.internal.processors.affinity.AffinityTopologyVersion#topologyVersion 获取拓扑版本号<br>                org.apache.ignite.internal.processors.cache.version.GridCacheVersionManager#next 生成下一个版本号<br>                    org.apache.ignite.internal.processors.cache.GridCacheSharedContext#localNode 获取本地节点<br>                        org.apache.ignite.internal.GridKernalContextImpl#discovery 获取发现管理器<br>                        org.apache.ignite.internal.managers.discovery.GridDiscoveryManager#localNode 获取本地节点<br>                    org.apache.ignite.spi.discovery.tcp.internal.TcpDiscoveryNode#order 获取节点顺序<br>                    org.apache.ignite.internal.processors.cache.version.GridCacheVersionManager#next 生成下一个版本号<br>                        org.apache.ignite.internal.processors.cache.version.GridCacheVersion#init0 初始化版本<br>                        org.apache.ignite.internal.processors.metric.impl.AtomicLongMetric#value 获取指标值<br>                org.apache.ignite.internal.processors.cache.distributed.dht.GridDhtTxLocalAdapter#init0 初始化DHT本地事务适配器<br>                    org.apache.ignite.internal.processors.cache.transactions.IgniteTxLocalAdapter#init0 初始化本地事务适配器<br>                        org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#init0 初始化事务适配器<br>                            org.apache.ignite.internal.util.lang.GridMetadataAwareAdapter#init0 初始化元数据感知适配器<br>                            org.apache.ignite.internal.util.IgniteUtils#currentTimeMillis 获取当前时间毫秒数<br>                            org.apache.ignite.internal.processors.cache.GridCacheSharedContext#kernalContext 获取内核上下文<br>                            org.apache.ignite.internal.util.IgniteUtils#contextDeploymentClassLoaderId 获取上下文部署类加载器ID<br>                                org.apache.ignite.internal.GridKernalContextImpl#deploy 获取部署管理器<br>                                org.apache.ignite.internal.managers.deployment.GridDeploymentManager#enabled 部署管理器是否启用<br>                                    org.apache.ignite.internal.managers.GridManagerAdapter#enabled 管理器是否启用<br>                                org.apache.ignite.internal.GridKernalContextImpl#job 获取作业处理器<br>                                org.apache.ignite.internal.processors.job.GridJobProcessor#currentDeployment 获取当前部署<br>                                org.apache.ignite.internal.GridKernalContextImpl#cache 获取缓存处理器<br>                                org.apache.ignite.internal.processors.cache.GridCacheProcessor#context 获取缓存上下文<br>                                org.apache.ignite.internal.processors.cache.GridCacheSharedContext#deploy 获取部署管理器<br>                                org.apache.ignite.internal.processors.cache.GridCacheDeploymentManager#locLoaderId 获取本地加载器ID<br>                            org.apache.ignite.internal.processors.cache.GridCacheSharedContext#discovery 获取发现管理器<br>                                org.apache.ignite.internal.GridKernalContextImpl#discovery 获取发现管理器<br>                            org.apache.ignite.internal.managers.discovery.GridDiscoveryManager#localNode 获取本地节点<br>                            org.apache.ignite.spi.discovery.tcp.internal.TcpDiscoveryNode#id 获取节点ID<br>                            org.apache.ignite.internal.managers.discovery.ConsistentIdMapper#init0 初始化一致ID映射器<br>                            org.apache.ignite.internal.processors.cache.GridCacheSharedContext#gridEvents 获取事件管理器<br>                                org.apache.ignite.internal.GridKernalContextImpl#event 获取事件管理器<br>                            org.apache.ignite.internal.managers.eventstorage.GridEventStorageManager#isRecordable 检查事件是否可记录<br>                            org.apache.ignite.internal.GridKernalContextImpl#task 获取任务处理器<br>                            org.apache.ignite.internal.processors.task.GridTaskProcessor#resolveTaskName 解析任务名<br>                            org.apache.ignite.internal.GridKernalContextImpl#performanceStatistics 获取性能统计处理器<br>                            org.apache.ignite.internal.processors.performancestatistics.PerformanceStatisticsProcessor#enabled 性能统计是否启用<br>                        org.apache.ignite.internal.processors.cache.transactions.IgniteTxStateImpl#init0 初始化事务状态实现<br>                            org.apache.ignite.internal.processors.cache.transactions.IgniteTxLocalStateAdapter#init0 初始化本地事务状态适配器<br>                            org.apache.ignite.internal.util.GridIntList#init0 初始化整数列表<br>                org.apache.ignite.internal.processors.cache.distributed.near.IgniteTxMappingsImpl#init0 初始化事务映射实现<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxLocalAdapter#initResult 初始化事务结果<br>                    org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#localResult 获取本地结果<br>                        org.apache.ignite.internal.processors.cache.GridCacheSharedContext#localNodeId 获取本地节点ID<br>                            org.apache.ignite.internal.GridKernalContextImpl#localNodeId 获取本地节点ID<br>                                org.apache.ignite.internal.GridKernalContextImpl#localNode 获取本地节点<br>                                org.apache.ignite.spi.discovery.tcp.internal.TcpDiscoveryNode#id 获取节点ID<br>                        org.apache.ignite.internal.processors.cache.transactions.IgniteTxLocalAdapter#originatingNodeId 获取发起节点ID<br>                            org.apache.ignite.internal.processors.cache.GridCacheSharedContext#localNodeId 获取本地节点ID<br>                                org.apache.ignite.internal.GridKernalContextImpl#localNodeId 获取本地节点ID<br>                                    org.apache.ignite.internal.GridKernalContextImpl#localNode 获取本地节点<br>                                    org.apache.ignite.spi.discovery.tcp.internal.TcpDiscoveryNode#id 获取节点ID<br>                    org.apache.ignite.internal.processors.cache.GridCacheReturn#init0 初始化缓存返回值<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#timeout 设置事务超时时间<br>            org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#system 是否为系统事务<br>            org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#applicationAttributes 设置应用属性<br>            org.apache.ignite.internal.processors.cache.transactions.IgniteTxManager#onCreated 事务创建回调<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxManager#transactionMap 获取事务映射<br>                    org.apache.ignite.internal.processors.cache.distributed.near.GridNearTxLocal#near 是否为近程事务<br>                    org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#local 是否为本地事务<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxManager#resetContext 重置事务上下文<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxManager#isCompleted 检查事务是否已完成<br>                    org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#xidVersion 获取事务ID版本<br>                    org.apache.ignite.internal.processors.cache.version.GridCacheVersion#hashCode 获取哈希码<br>                        org.apache.ignite.internal.processors.cache.version.GridCacheVersion#nodeOrder 获取节点顺序<br>                    org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#local 是否为本地事务<br>                    org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#dht 是否为DHT事务<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#xidVersion 获取事务ID版本<br>                org.apache.ignite.internal.processors.cache.version.GridCacheVersion#hashCode 获取哈希码<br>                    org.apache.ignite.internal.processors.cache.version.GridCacheVersion#nodeOrder 获取节点顺序<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#local 是否为本地事务<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#dht 是否为DHT事务<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#implicit 是否为隐式事务<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#threadId 获取线程ID<br>                org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#recordStateChangedEvent 记录事务状态变更事件<br>                    org.apache.ignite.internal.processors.cache.GridCacheSharedContext#gridEvents 获取事件管理器<br>                        org.apache.ignite.internal.GridKernalContextImpl#event 获取事件管理器<br>                    org.apache.ignite.internal.processors.cache.transactions.IgniteTxAdapter#system 是否为系统事务<br>                    org.apache.ignite.internal.managers.eventstorage.GridEventStorageManager#isRecordable 检查事件是否可记录<br>                org.apache.ignite.internal.GridLoggerProxy#isDebugEnabled 是否启用调试日志<br>                    org.apache.ignite.logger.log4j2.Log4J2Logger#isDebugEnabled 是否启用调试日志<br>        org.apache.ignite.internal.GridKernalGatewayImpl#readUnlock 解读锁<br>            org.apache.ignite.internal.util.StripedCompositeReadWriteLock#readLock 读写锁<br>                org.apache.ignite.internal.util.StripedCompositeReadWriteLock#curIdx 获取当前索引<br>    org.apache.ignite.internal.processors.cache.distributed.near.GridNearTxLocal#proxy 创建事务代理<br>        org.apache.ignite.internal.processors.cache.transactions.TransactionProxyImpl#init0 初始化事务代理<br></code></pre></td></tr></table></figure>
+
+<h2 id="事务开启原理深入分析"><a href="#事务开启原理深入分析" class="headerlink" title="事务开启原理深入分析"></a>事务开启原理深入分析</h2><h3 id="事务管理器的设计"><a href="#事务管理器的设计" class="headerlink" title="事务管理器的设计"></a>事务管理器的设计</h3><p>Ignite 中的事务管理采用分层设计，主要涉及以下几个核心组件：</p>
+<ul>
+<li><strong>IgniteTransactionsImpl</strong>: 事务管理器的实现类，对外提供事务操作接口</li>
+<li><strong>IgniteTxManager</strong>: 内部事务管理器，负责事务的创建、维护和销毁</li>
+<li><strong>GridNearTxLocal</strong>: 近端事务的具体实现，代表用户直接交互的事务对象</li>
+<li><strong>TransactionProxyImpl</strong>: 面向用户的事务代理对象</li>
+</ul>
+<h3 id="事务创建过程详解"><a href="#事务创建过程详解" class="headerlink" title="事务创建过程详解"></a>事务创建过程详解</h3><p>事务的创建过程涉及多个关键步骤：</p>
+<h4 id="参数校验与配置"><a href="#参数校验与配置" class="headerlink" title="参数校验与配置"></a>参数校验与配置</h4><p><code>IgniteTransactionsImpl#txStart0</code> 方法中，首先会对传入的参数进行校验，包括并发模式、隔离级别等。如果未指定参数，则使用默认配置。</p>
+<h4 id="线程安全控制"><a href="#线程安全控制" class="headerlink" title="线程安全控制"></a>线程安全控制</h4><p><code>GridKernalGatewayImpl#readLock</code> 加读锁来保证线程安全，防止在事务创建过程中集群状态发生变化。</p>
+<h4 id="嵌套事务检查"><a href="#嵌套事务检查" class="headerlink" title="嵌套事务检查"></a>嵌套事务检查</h4><p>在创建新事务之前，会通过 IgniteTxManager.userTx 检查当前线程是否已经存在事务。如果存在，则抛出异常，因为 Ignite 不支持嵌套事务。</p>
+<h4 id="事务对象创建"><a href="#事务对象创建" class="headerlink" title="事务对象创建"></a>事务对象创建</h4><p>通过 IgniteTxManager.newTx() 方法创建新的事务对象，主要步骤包括：</p>
+<ol>
+<li>获取当前任务的哈希值用于跟踪</li>
+<li>创建 GridNearTxLocal 实例</li>
+<li>设置事务属性，如并发模式、隔离级别、超时时间等</li>
+<li>为系统事务设置拓扑版本以防止死锁</li>
+</ol>
+<h4 id="事务初始化"><a href="#事务初始化" class="headerlink" title="事务初始化"></a>事务初始化</h4><p>在 GridNearTxLocal 构造函数中，会进行以下初始化操作：</p>
+<ol>
+<li>调用父类构造函数初始化基本属性</li>
+<li>生成事务版本号，通过 GridCacheVersionManager.next() 方法生成全局唯一的版本号</li>
+<li>初始化事务映射表，用于记录事务涉及的节点和键值映射关系</li>
+<li>初始化事务结果对象</li>
+</ol>
+<h4 id="事务注册"><a href="#事务注册" class="headerlink" title="事务注册"></a>事务注册</h4><p>通过 IgniteTxManager.onCreated() 方法将新创建的事务注册到事务管理器中：</p>
+<ol>
+<li>检查事务是否已完成，如果已完成则直接返回 null</li>
+<li>将事务添加到事务映射表中</li>
+<li>对于非隐式事务，将其添加到线程映射表中，以便后续通过线程 ID 查找事务</li>
+<li>记录事务开始事件</li>
+</ol>
+<h4 id="事务代理创建"><a href="#事务代理创建" class="headerlink" title="事务代理创建"></a>事务代理创建</h4><p>最后通过 GridNearTxLocal.proxy() 方法创建事务代理对象 TransactionProxyImpl，用户后续对事务的操作都是通过这个代理对象进行。</p>
+<h3 id="事务版本号机制"><a href="#事务版本号机制" class="headerlink" title="事务版本号机制"></a>事务版本号机制</h3><p>Ignite 使用 GridCacheVersion 来唯一标识每个事务，版本号包含以下信息：</p>
+<ul>
+<li><strong>topVer</strong>: 拓扑版本号，表示事务创建时的集群拓扑状态</li>
+<li><strong>order</strong>: 事务顺序号，保证全局顺序</li>
+<li><strong>nodeOrder</strong>: 节点顺序号，标识事务发起节点</li>
+</ul>
+<p>通过这种机制，Ignite 能够处理分布式环境下的事务冲突检测和一致性保证。</p>
+<h3 id="事务映射机制"><a href="#事务映射机制" class="headerlink" title="事务映射机制"></a>事务映射机制</h3><p>在分布式事务中，Ignite 需要跟踪事务涉及的所有键值对以及它们所在的节点。IgniteTxMappingsImpl 和 IgniteTxMappingsSingleImpl 用于维护这种映射关系，确保事务能够正确地在涉及的节点间协调。</p>
+<h3 id="生成版本号"><a href="#生成版本号" class="headerlink" title="生成版本号"></a>生成版本号</h3><ol>
+<li>生成唯一版本号<br>在 Apache Ignite 中，每个事务都有一个全局唯一的版本号（GridCacheVersion），这是事务管理的核心机制之一。当创建事务时，通过 GridCacheVersionManager.next() 方法生成版本号。</li>
+</ol>
+<p>作用与原理：</p>
+<ul>
+<li><p><strong>全局唯一标识</strong>：版本号由三部分组成：topologyVersion（拓扑版本）、order（顺序号）和 nodeOrder（节点顺序号）。这确保在分布式环境中每个事务都有唯一标识，避免事务 ID 冲突。</p>
+</li>
+<li><p><strong>事务顺序保证</strong>：order 字段是一个全局递增的序列号，保证事务在集群中的全局顺序。这是实现分布式事务 ACID 特性中“隔离性”的关键。</p>
+</li>
+<li><p><strong>冲突检测基础</strong>：在乐观事务中，通过比较版本号检测并发修改冲突。例如，当两个事务同时修改同一数据时，后提交的事务会检测到版本号不匹配而回滚。</p>
+</li>
+<li><p><strong>分布式协调依据</strong>：在两阶段提交过程中，各节点通过版本号识别对应的事务，作为事务提交&#x2F;回滚消息的唯一标识。</p>
+</li>
+<li><p><strong>实现机制</strong>：GridCacheVersionManager 维护一个原子计数器，结合当前拓扑版本和节点 ID 生成全局唯一版本号。通过 CAS 操作确保递增序列的原子性。</p>
+</li>
+</ul>
+<h3 id="设置拓扑信息"><a href="#设置拓扑信息" class="headerlink" title="设置拓扑信息"></a>设置拓扑信息</h3><p>事务在创建时会记录当前集群的拓扑信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">tx.topologyVersion(cctx.kernalContext().discovery().topologyVersion());<br></code></pre></td></tr></table></figure>
+
+<p>作用与原理：</p>
+<ul>
+<li><p><strong>一致性视图保证</strong>：记录事务开始时的集群拓扑状态，确保事务在执行过程中看到一致的数据分布视图，避免因节点加入&#x2F;离开导致的数据不一致问题。</p>
+</li>
+<li><p><strong>防止脏读和不可重复读</strong>：事务只能看到在该拓扑版本之前已提交的数据，即使集群拓扑发生变化，事务仍能保持其一致性视图。</p>
+</li>
+<li><p><strong>拓扑变更处理</strong>：如果事务执行过程中拓扑发生变化，Ignite 会检测并采取适当措施。对于悲观事务，可能直接失败；对于乐观事务，可能在提交时检测冲突。</p>
+</li>
+<li><p><strong>死锁预防</strong>：系统事务（如索引重建）会使用拓扑版本防止死锁，通过 lockedTopologyVersion() 获取已锁定的拓扑版本。</p>
+</li>
+<li><p><strong>实现细节</strong>：拓扑版本包含主版本号（topologyVersion）和次版本号（minorTopologyVersion）。主版本号在节点加入&#x2F;离开时递增，次版本号在分区映射变更时递增。</p>
+</li>
+</ul>
+<h3 id="初始化状态"><a href="#初始化状态" class="headerlink" title="初始化状态"></a>初始化状态</h3><p>事务状态（TransactionState）的初始化是事务管理的核心：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 初始化事务状态</span><br>txState = <span class="hljs-keyword">new</span> <span class="hljs-title class_">IgniteTxStateImpl</span>();<br></code></pre></td></tr></table></figure>
+
+<p>作用与原理：</p>
+<ul>
+<li><p><strong>事务生命周期管理</strong>：定义了事务的完整生命周期：ACTIVE → PREPARING → PREPARED → COMMITTING → COMMITTED，或 ACTIVE → MARKED_ROLLBACK → ROLLING_BACK → ROLLED_BACK。确保事务只能按预定义路径转换状态。</p>
+</li>
+<li><p><strong>并发控制基础</strong>：不同状态对应不同的锁策略，例如，PREPARING 状态下获取锁，PREPARED 状态下释放锁，为不同隔离级别提供状态支持。</p>
+</li>
+<li><p><strong>故障恢复关键</strong>：事务状态持久化到 WAL（Write-Ahead Log）。节点故障后，可通过状态恢复事务，如 PREPARED 状态表示事务已准备好提交，可继续完成。</p>
+</li>
+<li><p><strong>两阶段提交支持</strong>：PREPARED 状态表示所有参与者已准备好提交，COMMITTING 状态表示提交正在进行中。状态机确保两阶段提交的正确执行。</p>
+</li>
+<li><p><strong>状态转换约束</strong>：严格的转换规则防止非法状态（如从 COMMITTED 回滚到 ACTIVE），每个状态转换都可能触发相应的事件和处理逻辑。</p>
+</li>
+</ul>
+<h3 id="初始化映射"><a href="#初始化映射" class="headerlink" title="初始化映射"></a>初始化映射</h3><p>事务映射（IgniteTxMappings）记录了事务涉及的节点和数据关系：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">mappings = implicitSingle ? <span class="hljs-keyword">new</span> <span class="hljs-title class_">IgniteTxMappingsSingleImpl</span>() : <span class="hljs-keyword">new</span> <span class="hljs-title class_">IgniteTxMappingsImpl</span>();<br></code></pre></td></tr></table></figure>
+
+<p>作用与原理：</p>
+<ul>
+<li><p><strong>分布式事务协调</strong>：记录每个键值对映射到哪些节点（主节点和备份节点），确定参与事务的节点集合，为两阶段提交提供参与者列表。</p>
+</li>
+<li><p><strong>近程与远程事务区分</strong>：nearMap 记录近端缓存映射（客户端节点），dhtMap 记录分布式哈希表映射（数据节点），支持 Ignite 的客户端-服务器架构。</p>
+</li>
+<li><p><strong>锁管理基础</strong>：为每个涉及的键值对维护锁信息，记录哪些节点持有锁，哪些节点需要获取锁，支持死锁检测和预防。</p>
+</li>
+<li><p><strong>事务提交优化</strong>：一阶段提交：当所有数据在单个节点上时，直接提交；两阶段提交：当数据分布在多个节点时，使用两阶段提交协议。</p>
+</li>
+<li><p><strong>故障恢复依据</strong>：节点故障时，通过映射关系确定受影响的事务，为事务恢复提供必要的上下文信息，支持从故障中恢复事务状态。</p>
+</li>
+</ul>
+<h2 id="相关类"><a href="#相关类" class="headerlink" title="相关类"></a>相关类</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs km">IgniteTxManager<br>    ignite 事务管理器，管理缓存事务<br>    处理事务的创建、提交、回滚、状态管理以及与分布式事务相关的各种操作<br>    负责协调多节点间的事务一致性，确保ACID属性在分布式环境下的实现<br>    管理事务映射、版本控制和并发控制<br><br>GridNearTxLocal<br>    近程事务本地实现，代表客户端发起的事务<br>    处理事务的本地协调，管理事务状态和参与的缓存操作<br>    负责与远端节点的通信，协调分布式事务的执行<br><br>IgniteTransactionsImpl<br>    IgniteTransactions 接口的实现类<br>    提供事务开启、配置和管理的高层API<br>    封装了事务创建的复杂逻辑，简化用户使用<br><br>TransactionProxyImpl<br>    事务代理实现，为用户提供事务操作的代理接口<br>    包装实际的事务对象，提供统一的操作接口<br>    支持事务的提交、回滚和状态查询等操作<br><br>GridCacheSharedContext<br>    缓存共享上下文，持有缓存相关的共享资源和配置<br>    提供对事务管理器、版本管理器、事件管理器等的访问<br>    是事务系统与缓存系统交互的桥梁<br><br>IgniteTxAdapter<br>    事务适配器基类，提供事务的基本功能和状态管理<br>    定义了事务的生命周期方法和状态转换逻辑<br>    支持事务的元数据管理和事件记录<br></code></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Apache Ignite 的事务开启过程涉及多个组件的协同工作，从高层API到低层实现，形成了一个完整的分布式事务管理系统。通过精细的状态管理和版本控制，Ignite 能够在保证性能的同时提供强一致性保证。</p>
+<p>事务开启的关键点：</p>
+<ol>
+<li><strong>线程安全</strong>: 通过读写锁确保并发访问的安全性</li>
+<li><strong>状态检查</strong>: 验证集群状态和线程事务状态</li>
+<li><strong>版本管理</strong>: 为每个事务分配唯一版本号用于冲突检测</li>
+<li><strong>拓扑感知</strong>: 考虑集群拓扑变化对事务的影响</li>
+<li><strong>追踪支持</strong>: 提供分布式追踪能力便于问题诊断</li>
+</ol>
+<p>Ignite 的事务机制设计体现了分布式系统中复杂性管理的精髓，通过分层架构和职责分离，将复杂的分布式事务处理封装成简单易用的 API，同时保证了系统的可靠性和性能。</p>
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/markmap-toolbar@0.18.10/dist/style.css"><script src="https://fastly.jsdelivr.net/npm/d3@7"></script><script src="https://fastly.jsdelivr.net/npm/markmap-view@0.18.10"></script><script src="https://fastly.jsdelivr.net/npm/markmap-toolbar@0.18.10"></script>
+<link rel="stylesheet" href="/css/markmap.css">
+
+<script src="/js/markmap.js"></script>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io">flyingzc</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://flyingzc.github.io/articles/ignite/ignite03-transaction-begin.html">https://flyingzc.github.io/articles/ignite/ignite03-transaction-begin.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://flyingzc.github.io" target="_blank">flyingzc's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Transaction/">Transaction</a><a class="post-meta__tags" href="/tags/Ignite/">Ignite</a></div><div class="post_share"><div class="social-share" data-image="/images/zc-icon.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/images/wechat.jpeg" target="_blank"><img class="post-qr-code-img" src="/images/wechat.jpeg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/articles/hikaricp/hiaricp01-init.html" title="HikariCP 连接池创建流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">HikariCP 连接池创建流程</div></div></a></div><div class="next-post pull-right"><a href="/articles/ignite/ignite02-transaction.html" title="Apache Ignite 分布式事务原理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Apache Ignite 分布式事务原理</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/articles/ignite/ignite01-build.html" title="Apache Ignite IDEA 环境搭建"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-11</div><div class="title">Apache Ignite IDEA 环境搭建</div></div></a></div><div><a href="/articles/ignite/ignite02-transaction.html" title="Apache Ignite 分布式事务原理"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-18</div><div class="title">Apache Ignite 分布式事务原理</div></div></a></div><div><a href="/articles/distributed/distributed01-consistency.html" title="分布式一致性模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-12-19</div><div class="title">分布式一致性模型</div></div></a></div><div><a href="/articles/narayana/narayana01-init.html" title="Narayana 事务管理器初始化流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-12-06</div><div class="title">Narayana 事务管理器初始化流程</div></div></a></div><div><a href="/articles/narayana/narayana03-begin.html" title="Narayana 事务 begin 流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-12-08</div><div class="title">Narayana 事务 begin 流程</div></div></a></div><div><a href="/articles/narayana/narayana02-init-jdbc.html" title="Narayana启动-注册恢复模块流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-12-07</div><div class="title">Narayana启动-注册恢复模块流程</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/images/zc-icon.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">flyingzc</div><div class="author-info__description">不积跬步无以至千里<br/>不积小流无以成江海</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">86</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">30</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/FlyingZC"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/FlyingZC" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">FlyingZC's Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Apache-Ignite-%E5%BC%80%E5%90%AF%E4%BA%8B%E5%8A%A1%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">Apache Ignite 开启事务执行流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">总体流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%A6%E7%BB%86%E6%B5%81%E7%A8%8B"><span class="toc-number">1.3.</span> <span class="toc-text">详细流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96ignite%E5%AE%9E%E4%BE%8B"><span class="toc-number">1.3.1.</span> <span class="toc-text">获取ignite实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96Ignite-Transaction-%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.3.2.</span> <span class="toc-text">获取Ignite Transaction 对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%90%AF%E4%BA%8B%E5%8A%A1"><span class="toc-number">1.3.3.</span> <span class="toc-text">开启事务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E5%BC%80%E5%90%AF%E5%8E%9F%E7%90%86%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">事务开启原理深入分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86%E5%99%A8%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.4.1.</span> <span class="toc-text">事务管理器的设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.4.2.</span> <span class="toc-text">事务创建过程详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">参数校验与配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%8E%A7%E5%88%B6"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">线程安全控制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B5%8C%E5%A5%97%E4%BA%8B%E5%8A%A1%E6%A3%80%E6%9F%A5"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">嵌套事务检查</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E5%AF%B9%E8%B1%A1%E5%88%9B%E5%BB%BA"><span class="toc-number">1.4.2.4.</span> <span class="toc-text">事务对象创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">1.4.2.5.</span> <span class="toc-text">事务初始化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E6%B3%A8%E5%86%8C"><span class="toc-number">1.4.2.6.</span> <span class="toc-text">事务注册</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E4%BB%A3%E7%90%86%E5%88%9B%E5%BB%BA"><span class="toc-number">1.4.2.7.</span> <span class="toc-text">事务代理创建</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E7%89%88%E6%9C%AC%E5%8F%B7%E6%9C%BA%E5%88%B6"><span class="toc-number">1.4.3.</span> <span class="toc-text">事务版本号机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8B%E5%8A%A1%E6%98%A0%E5%B0%84%E6%9C%BA%E5%88%B6"><span class="toc-number">1.4.4.</span> <span class="toc-text">事务映射机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E7%89%88%E6%9C%AC%E5%8F%B7"><span class="toc-number">1.4.5.</span> <span class="toc-text">生成版本号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E6%8B%93%E6%89%91%E4%BF%A1%E6%81%AF"><span class="toc-number">1.4.6.</span> <span class="toc-text">设置拓扑信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E7%8A%B6%E6%80%81"><span class="toc-number">1.4.7.</span> <span class="toc-text">初始化状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%A0%E5%B0%84"><span class="toc-number">1.4.8.</span> <span class="toc-text">初始化映射</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E7%B1%BB"><span class="toc-number">1.5.</span> <span class="toc-text">相关类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.6.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/shardingsphere/ShardingSphere%E5%BC%80%E5%90%AF%E9%A2%84%E7%BC%96%E8%AF%91%E5%8F%82%E6%95%B0insert%E6%85%A2%E5%AE%9A%E4%BD%8D.html" title="ShardingSphere开启预编译参数insert慢定位">ShardingSphere开启预编译参数insert慢定位</a><time datetime="2026-02-08T16:00:00.000Z" title="发表于 2026-02-09 00:00:00">2026-02-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/hikaricp/hiaricp01-init.html" title="HikariCP 连接池创建流程">HikariCP 连接池创建流程</a><time datetime="2025-12-21T16:00:00.000Z" title="发表于 2025-12-22 00:00:00">2025-12-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/ignite/ignite03-transaction-begin.html" title="Apache Ignite 开启事务执行流程">Apache Ignite 开启事务执行流程</a><time datetime="2025-10-10T16:00:00.000Z" title="发表于 2025-10-11 00:00:00">2025-10-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/ignite/ignite02-transaction.html" title="Apache Ignite 分布式事务原理">Apache Ignite 分布式事务原理</a><time datetime="2025-09-17T16:00:00.000Z" title="发表于 2025-09-18 00:00:00">2025-09-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/articles/ignite/ignite01-build.html" title="Apache Ignite IDEA 环境搭建">Apache Ignite IDEA 环境搭建</a><time datetime="2025-09-10T16:00:00.000Z" title="发表于 2025-09-11 00:00:00">2025-09-11</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2026 By flyingzc</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
